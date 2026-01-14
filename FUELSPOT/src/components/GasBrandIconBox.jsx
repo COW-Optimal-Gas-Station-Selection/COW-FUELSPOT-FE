@@ -11,12 +11,13 @@ const BRAND_IMAGE_MAP = {
 };
 
 
+
 function GasBrandIconBox({ brand }) {
   const imageName = BRAND_IMAGE_MAP[brand];
   let imageSrc = null;
   if (imageName) {
     try {
-      imageSrc = require(`../assets/brands/${imageName}`);
+      imageSrc = new URL(`../assets/brands/${imageName}`, import.meta.url).href;
     } catch (e) {
       imageSrc = null;
     }

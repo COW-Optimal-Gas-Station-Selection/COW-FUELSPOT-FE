@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import KakaoMapMarker from '../atoms/KakaoMapMarker';
 import KakaoMapMarkerLabel from '../atoms/KakaoMapMarkerLabel';
 import KakaoMapRoute from '../atoms/KakaoMapRoute';
@@ -109,21 +109,19 @@ const KakaoMap = ({
           {stations && stations.length > 0 && stations.map(
             station =>
               station.lat && station.lng ? (
-                <>
+                <React.Fragment key={station.id}>
                   <KakaoMapMarker
-                    key={station.id + '-marker'}
                     mapInstance={mapInstance.current}
                     position={new window.kakao.maps.LatLng(station.lat, station.lng)}
                     station={station}
                     onClick={onMarkerClick}
                   />
                   <KakaoMapMarkerLabel
-                    key={station.id + '-label'}
                     mapInstance={mapInstance.current}
                     position={new window.kakao.maps.LatLng(station.lat, station.lng)}
                     name={station.name}
                   />
-                </>
+                </React.Fragment>
               ) : null
           )}
           {/* 경로 표시 */}

@@ -1,5 +1,5 @@
-import PointIcon from '../../assets/icon/point.svg?react';
-import Button from '../../components/Button';
+import PointIcon from '../../../assets/icon/point.svg?react';
+import Button from '../../../components/Button';
 
 const LocationButton = ({ className = '', ...props }) => (
   <Button
@@ -7,7 +7,7 @@ const LocationButton = ({ className = '', ...props }) => (
     {...props}
   >
     <PointIcon className="w-5 h-5 md:w-6 md:h-6" />
-    <span className="text-[15px] md:text-base">현재 위치</span>
+    <span className="text-[15px] md:text-base">현재위치</span>
   </Button>
 );
 

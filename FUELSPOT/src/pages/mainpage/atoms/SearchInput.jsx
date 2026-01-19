@@ -1,5 +1,5 @@
-import SearchIcon from '../../assets/icon/search.svg?react';
-import Input from '../../components/Input';
+import SearchIcon from '../../../assets/icon/search.svg?react';
+import Input from '../../../components/Input';
 
 const SearchInput = ({ className = '', ...props }) => (
   <div className="relative w-full">

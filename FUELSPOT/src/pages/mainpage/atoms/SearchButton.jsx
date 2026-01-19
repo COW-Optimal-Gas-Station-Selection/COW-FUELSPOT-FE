@@ -1,4 +1,4 @@
-import SearchIcon from '../../assets/icon/search.svg?react';
+import SearchIcon from '../../../assets/icon/search.svg?react';
 
 const SearchButton = ({ className = '', ...props }) => (
   <button

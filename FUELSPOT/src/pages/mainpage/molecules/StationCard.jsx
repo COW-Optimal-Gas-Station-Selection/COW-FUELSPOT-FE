@@ -1,7 +1,7 @@
-import PointIcon from '../../assets/icon/point.svg?react';
-import WatchIcon from '../../assets/icon/watch.svg?react';
-import FuelPriceBox from '../../components/FuelPriceBox';
-import GasBrandIconBox from '../../components/GasBrandIconBox';
+import PointIcon from '../../../assets/icon/point.svg?react';
+import WatchIcon from '../../../assets/icon/watch.svg?react';
+import FuelPriceBox from '../../../components/FuelPriceBox';
+import GasBrandIconBox from '../../../components/GasBrandIconBox';
 
 const StationCard = ({ station, onClick, onNavigate, ...props }) => {
   return (

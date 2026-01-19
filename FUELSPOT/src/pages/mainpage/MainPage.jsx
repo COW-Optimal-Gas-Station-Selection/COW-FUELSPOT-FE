@@ -1,4 +1,4 @@
-import { FUEL_TYPE } from '../components/FuelPriceBox';
+import { FUEL_TYPE } from '../../components/FuelPriceBox';
 import MainPageLayout from './organisms/MainPageLayout';
 
 const STATIONS = [

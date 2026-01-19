@@ -1,11 +1,16 @@
 import { Link } from 'react-router-dom'
 import Separator from '../atoms/Separator'
 
-function LoginFooter() {
+function LoginFooter({ onFindPasswordClick }) {
   return (
     <>
       <div className="text-center mb-6">
-        <a href="#" className="text-sm text-gray-600 hover:text-gray-900">비밀번호를 잊으셨나요?</a>
+        <button 
+          onClick={onFindPasswordClick}
+          className="text-sm text-gray-600 hover:text-gray-900 cursor-pointer"
+        >
+          비밀번호를 잊으셨나요?
+        </button>
       </div>
       <Separator />
       <div className="text-center">

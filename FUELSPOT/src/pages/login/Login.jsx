@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../../components/Button'
 import Modal from '../../components/Modal'
+import FindPasswordModal from '../../components/FindPasswordModal'
 import LoginHeader from './organisms/LoginHeader'
 import EmailInputSection from './organisms/EmailInputSection'
 import PasswordInputSection from './organisms/PasswordInputSection'
@@ -14,6 +15,7 @@ function Login() {
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [showFindPasswordModal, setShowFindPasswordModal] = useState(false)
 
   const validateEmail = (email) => {
     return email.includes('@') && email.includes('.')
@@ -65,7 +67,7 @@ function Login() {
           <div className="mb-4">
             <Button className="w-full" onClick={handleLogin}>로그인</Button>
           </div>
-          <LoginFooter />
+          <LoginFooter onFindPasswordClick={() => setShowFindPasswordModal(true)} />
         </div>
       </div>
       <Modal
@@ -74,6 +76,10 @@ function Login() {
         type="success"
         title="로그인 성공!"
         message="환영합니다. 메인 페이지로 이동합니다."
+      />
+      <FindPasswordModal
+        isOpen={showFindPasswordModal}
+        onClose={() => setShowFindPasswordModal(false)}
       />
     </>
   )

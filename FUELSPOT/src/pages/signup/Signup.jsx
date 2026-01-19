@@ -19,6 +19,10 @@ function Signup() {
   const [passwordError, setPasswordError] = useState('')
   const [confirmPasswordError, setConfirmPasswordError] = useState('')
 
+  const validateEmail = (email) => {
+    return email.includes('@') && email.includes('.')
+  }
+
   const handleSignup = () => {
     setNameError('')
     setEmailError('')
@@ -32,6 +36,11 @@ function Signup() {
 
     if (!email.trim()) {
       setEmailError('이메일을 입력해주세요')
+      return
+    }
+
+    if (!validateEmail(email)) {
+      setEmailError('올바른 이메일 형식이 아닙니다')
       return
     }
 
@@ -50,8 +59,9 @@ function Signup() {
       return
     }
 
-    // 모든 검증 통과 시 /main으로 이동
-    navigate('/main')
+    // 모든 검증 통과 시 알림창 표시 후 로그인 페이지로 이동
+    alert('회원가입이 완료되었습니다!')
+    navigate('/login')
   }
 
   return (

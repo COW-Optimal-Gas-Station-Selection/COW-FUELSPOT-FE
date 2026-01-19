@@ -13,12 +13,21 @@ function Login() {
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
 
+  const validateEmail = (email) => {
+    return email.includes('@') && email.includes('.')
+  }
+
   const handleLogin = () => {
     setEmailError('')
     setPasswordError('')
 
     if (!email.trim()) {
       setEmailError('이메일을 입력해주세요')
+      return
+    }
+
+    if (!validateEmail(email)) {
+      setEmailError('올바른 이메일 형식이 아닙니다')
       return
     }
 

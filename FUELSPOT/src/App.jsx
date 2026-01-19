@@ -1,20 +1,17 @@
-import Button from './components/Button'
-import Input from './components/Input'
-import PrimitiveButton from './components/PrimitiveButton'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Login from './pages/login/Login'
+import Signup from './pages/signup/Signup'
+import Main from './main/page/Main'
 
 function App() {
   return (
-    <div className="p-8 space-y-4">
-      <div className="w-64">
-        <Button />
-      </div>
-      <div className="w-64">
-        <Input />
-      </div>
-      <div className="w-64">
-        <PrimitiveButton />
-      </div>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/main" element={<Main />} />
+      </Routes>
+    </Router>
   )
 }
 

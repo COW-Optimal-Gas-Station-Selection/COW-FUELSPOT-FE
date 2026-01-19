@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../../components/Button'
+import Modal from '../../components/Modal'
 import LoginHeader from './organisms/LoginHeader'
 import EmailInputSection from './organisms/EmailInputSection'
 import PasswordInputSection from './organisms/PasswordInputSection'
@@ -12,6 +13,7 @@ function Login() {
   const [password, setPassword] = useState('')
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   const validateEmail = (email) => {
     return email.includes('@') && email.includes('.')
@@ -36,29 +38,44 @@ function Login() {
       return
     }
 
+    // 로그인 성공 모달 표시
+    setShowSuccessModal(true)
+  }
+
+  const handleModalClose = () => {
+    setShowSuccessModal(false)
     navigate('/main')
   }
 
   return (
-    <div className="min-h-screen bg-blue-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        <LoginHeader />
-        <EmailInputSection
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          error={emailError}
-        />
-        <PasswordInputSection
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          error={passwordError}
-        />
-        <div className="mb-4">
-          <Button className="w-full" onClick={handleLogin}>로그인</Button>
+    <>
+      <div className="min-h-screen bg-blue-50 flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
+          <LoginHeader />
+          <EmailInputSection
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={emailError}
+          />
+          <PasswordInputSection
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={passwordError}
+          />
+          <div className="mb-4">
+            <Button className="w-full" onClick={handleLogin}>로그인</Button>
+          </div>
+          <LoginFooter />
         </div>
-        <LoginFooter />
       </div>
-    </div>
+      <Modal
+        isOpen={showSuccessModal}
+        onClose={handleModalClose}
+        type="success"
+        title="로그인 성공!"
+        message="환영합니다. 메인 페이지로 이동합니다."
+      />
+    </>
   )
 }
 

@@ -14,7 +14,7 @@ function PasswordInputWithToggle({ value, onChange, className = "" }) {
       </div>
       <Input
         type={showPassword ? "text" : "password"}
-        placeholder=""
+        placeholder="••••••••"
         value={value}
         onChange={onChange}
         className={`pl-10 pr-10 ${className}`}

@@ -2,39 +2,74 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../../components/Button'
 import Modal from '../../components/Modal'
-import SignupHeader from './organisms/SignupHeader'
-import NameInputSection from './organisms/NameInputSection'
-import EmailInputSection from './organisms/EmailInputSection'
-import PasswordInputSection from './organisms/PasswordInputSection'
 import ConfirmPasswordInputSection from './organisms/ConfirmPasswordInputSection'
+import EmailInputSection from './organisms/EmailInputSection'
+import FuelTypeInputSection from './organisms/FuelTypeInputSection'
+import NameInputSection from './organisms/NameInputSection'
+import PasswordInputSection from './organisms/PasswordInputSection'
+import RadiusInputSection from './organisms/RadiusInputSection'
 import SignupFooter from './organisms/SignupFooter'
+import SignupHeader from './organisms/SignupHeader'
 
 function Signup() {
   const navigate = useNavigate()
-  const [name, setName] = useState('')
+  const [nickname, setNickname] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [nameError, setNameError] = useState('')
+  const [fuelType, setFuelType] = useState('GASOLINE')
+  const [radius, setRadius] = useState(3)
+  
+  const [nicknameError, setNicknameError] = useState('')
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [confirmPasswordError, setConfirmPasswordError] = useState('')
+  const [fuelTypeError, setFuelTypeError] = useState('')
+  const [radiusError, setRadiusError] = useState('')
+  
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [showErrorModal, setShowErrorModal] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+
+  const nicknameRequirements = {
+    isLengthValid: nickname.length >= 2 && nickname.length <= 10
+  }
+
+  const emailRequirements = {
+    isEmailFormat: email.length > 0 && email.includes('@') && email.includes('.')
+  }
+
+  const passwordRequirements = {
+    isLengthValid: password.length >= 8,
+    isComplexValid: password.length > 0 && 
+      /[A-Za-z]/.test(password) && 
+      /\d/.test(password) && 
+      /[@$!%*#?&]/.test(password)
+  }
+
+  const confirmPasswordRequirements = {
+    isMatch: confirmPassword.length > 0 && password === confirmPassword
+  }
 
   const validateEmail = (email) => {
     return email.includes('@') && email.includes('.')
   }
 
   const handleSignup = () => {
-    setNameError('')
+    setNicknameError('')
     setEmailError('')
     setPasswordError('')
     setConfirmPasswordError('')
+    setFuelTypeError('')
+    setRadiusError('')
 
-    if (!name.trim()) {
-      setNameError('이름을 입력해주세요')
+    if (!nickname.trim()) {
+      setNicknameError('닉네임을 입력해주세요')
+      return
+    }
+
+    if (nickname.length < 2 || nickname.length > 10) {
+      setNicknameError('닉네임은 2자 이상 10자 이하이어야 합니다')
       return
     }
 
@@ -53,6 +88,11 @@ function Signup() {
       return
     }
 
+    if (password.length < 8 || password.length > 20) {
+      setPasswordError('비밀번호는 8자 이상 20자 이하로 입력해주세요')
+      return
+    }
+
     if (!confirmPassword.trim()) {
       setConfirmPasswordError('비밀번호를 다시 입력해주세요')
       return
@@ -65,7 +105,25 @@ function Signup() {
       return
     }
 
+    if (!fuelType) {
+      setFuelTypeError('선호 유종을 선택해주세요')
+      return
+    }
+
+    if (!radius || radius < 1) {
+      setRadiusError('반경은 최소 1km 이상이어야 합니다')
+      return
+    }
+
     // 모든 검증 통과 시 성공 모달 표시
+    // 실제 API 연동 시에는 여기서 fetch 호출
+    console.log({
+      email,
+      password,
+      nickname,
+      fuelType,
+      radius: parseInt(radius)
+    })
     setShowSuccessModal(true)
   }
 
@@ -80,33 +138,70 @@ function Signup() {
 
   return (
     <>
-      <div className="min-h-screen bg-blue-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center p-4 py-16">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-white/50 backdrop-blur-sm">
           <SignupHeader />
-          <NameInputSection
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            error={nameError}
-          />
-          <EmailInputSection
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={emailError}
-          />
-          <PasswordInputSection
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            error={passwordError}
-          />
-          <ConfirmPasswordInputSection
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            error={confirmPasswordError}
-          />
-          <div className="mb-4">
-            <Button className="w-full" onClick={handleSignup}>회원가입</Button>
+          
+          <div className="space-y-6">
+            <section>
+              <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <span className="w-4 h-[1px] bg-gray-300"></span> 계정 정보
+              </h3>
+              <NameInputSection
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                error={nicknameError}
+                requirements={nicknameRequirements}
+              />
+              <EmailInputSection
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                error={emailError}
+                requirements={emailRequirements}
+              />
+              <PasswordInputSection
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                error={passwordError}
+                requirements={passwordRequirements}
+              />
+              <ConfirmPasswordInputSection
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                error={confirmPasswordError}
+                requirements={confirmPasswordRequirements}
+              />
+            </section>
+
+            <section className="pt-2">
+              <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <span className="w-4 h-[1px] bg-gray-300"></span> 서비스 설정
+              </h3>
+              <FuelTypeInputSection
+                value={fuelType}
+                onChange={(val) => setFuelType(val)}
+                error={fuelTypeError}
+              />
+              <RadiusInputSection
+                value={radius}
+                onChange={(e) => setRadius(e.target.value)}
+                error={radiusError}
+              />
+            </section>
           </div>
-          <SignupFooter />
+
+          <div className="mt-10">
+            <Button 
+              className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-200 transition-all duration-300 active:scale-95 text-base font-bold" 
+              onClick={handleSignup}
+            >
+              회원가입 완료
+            </Button>
+          </div>
+          
+          <div className="mt-8">
+            <SignupFooter />
+          </div>
         </div>
       </div>
       <Modal
@@ -120,7 +215,7 @@ function Signup() {
         isOpen={showErrorModal}
         onClose={handleErrorModalClose}
         type="error"
-        title="비밀번호 불일치"
+        title="회원가입 실패"
         message={errorMessage}
       />
     </>

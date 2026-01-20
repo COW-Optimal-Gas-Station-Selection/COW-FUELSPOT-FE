@@ -1,0 +1,14 @@
+import PointIcon from '../../../assets/icon/point.svg?react';
+import Button from '../../../components/Button';
+
+const LocationButton = ({ className = '', ...props }) => (
+  <Button
+    className={`w-full h-[44px] bg-[#1e2939] text-white rounded-[10px] text-base font-medium flex items-center justify-center gap-2 px-3 hover:bg-slate-700 transition-colors ${className}`}
+    {...props}
+  >
+    <PointIcon className="w-5 h-5 md:w-6 md:h-6" />
+    <span className="text-[15px] md:text-base">현재위치</span>
+  </Button>
+);
+
+export default LocationButton;

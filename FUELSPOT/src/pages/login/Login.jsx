@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../../components/Button'
-import Modal from '../../components/Modal'
 import FindPasswordModal from '../../components/FindPasswordModal'
-import LoginHeader from './organisms/LoginHeader'
+import Modal from '../../components/Modal'
 import EmailInputSection from './organisms/EmailInputSection'
-import PasswordInputSection from './organisms/PasswordInputSection'
 import LoginFooter from './organisms/LoginFooter'
+import LoginHeader from './organisms/LoginHeader'
+import PasswordInputSection from './organisms/PasswordInputSection'
 
 function Login() {
   const navigate = useNavigate()
@@ -46,7 +46,7 @@ function Login() {
 
   const handleModalClose = () => {
     setShowSuccessModal(false)
-    navigate('/main')
+    navigate('/')
   }
 
   return (

@@ -8,6 +8,8 @@ const BRAND_IMAGE_MAP = {
   "현대오일뱅크": "hyundai.png",
   "S-OIL": "s-oil.png",
   "알뜰주유소": "altteul.png",
+  "GS칼텍스": "gs.png",
+  "SK에너지": "sk.png",
 };
 
 

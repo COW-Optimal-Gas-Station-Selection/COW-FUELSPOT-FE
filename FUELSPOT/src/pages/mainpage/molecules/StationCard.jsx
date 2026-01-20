@@ -1,5 +1,4 @@
 import PointIcon from '../../../assets/icon/point.svg?react';
-import WatchIcon from '../../../assets/icon/watch.svg?react';
 import FuelPriceBox from '../../../components/FuelPriceBox';
 import GasBrandIconBox from '../../../components/GasBrandIconBox';
 
@@ -15,7 +14,7 @@ const StationCard = ({ station, onClick, onNavigate, ...props }) => {
           <PointIcon className="shrink-0 w-4 h-4" />
           <span>{station.address}</span>
         </div>
-        <div className="text-[#155dfc] text-sm font-medium mt-1">{station.distance}</div>
+        
       </div>
       <div className="flex gap-2 mt-1">
         {station.prices.map((p, idx) => (
@@ -24,15 +23,18 @@ const StationCard = ({ station, onClick, onNavigate, ...props }) => {
           </div>
         ))}
       </div>
-      <button
-        className="mt-2 px-3 py-1 rounded bg-[#155dfc] text-white text-xs font-semibold hover:bg-[#0d3fa6] transition-colors w-fit self-end"
-        onClick={e => {
-          e.stopPropagation();
-          if (onNavigate) onNavigate(station);
-        }}
-      >
-        길찾기
-      </button>
+      <div className="flex items-center justify-between mt-1 gap-2">
+        <div className="text-[#155dfc] text-sm font-medium">{station.distance}</div>
+        <button
+          className="px-3 py-1 rounded bg-[#155dfc] text-white text-xs font-semibold hover:bg-[#0d3fa6] transition-colors w-fit"
+          onClick={e => {
+            e.stopPropagation();
+            if (onNavigate) onNavigate(station);
+          }}
+        >
+          길찾기
+        </button>
+      </div>
     </div>
   );
 };

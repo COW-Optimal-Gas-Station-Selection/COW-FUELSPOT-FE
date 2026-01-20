@@ -8,8 +8,21 @@ import { useRef } from 'react';
 
 const MainPageLayout = ({ stations }) => {
   const [selectedStation, setSelectedStation] = useState(null);
-  const [routeTo, setRouteTo] = useState(null); // 길찾기 대상 주유소
-  const [currentLocation, setCurrentLocation] = useState({ lat: 37.5665, lng: 126.9780 }); // 기본값: 서울시청
+  const [routeTo, setRouteTo] = useState(null); 
+  const [currentLocation, setCurrentLocation] = useState({ lat: 37.5665, lng: 126.9780 }); 
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        setUser(JSON.parse(userStr));
+      } catch {
+        setUser(null);
+      }
+    } else {
+      setUser(null);
+    }
+  }, []);
 
   // 내 위치 가져오기
   useEffect(() => {
@@ -63,7 +76,7 @@ const MainPageLayout = ({ stations }) => {
 
   return (
     <div className="flex flex-col h-screen bg-[#f9fafb]">
-      <Header onLocationClick={handleLocationClick} />
+      <Header onLocationClick={handleLocationClick} user={user} />
       <main className="flex-1 max-w-[1248px] mx-auto w-full p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-hidden">
         <MapViewPanel stations={stations} selectedStation={selectedStation} onMarkerClick={handleMarkerClick} routeTo={routeTo} currentLocation={currentLocation} />
         <StationListPanel stations={stations} onStationClick={setSelectedStation} onNavigate={handleNavigate} ref={listPanelRef} />

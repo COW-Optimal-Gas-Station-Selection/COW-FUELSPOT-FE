@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { signup } from '../../api/memberService'
 import Button from '../../components/Button'
 import Modal from '../../components/Modal'
 import ConfirmPasswordInputSection from './organisms/ConfirmPasswordInputSection'
@@ -115,16 +116,23 @@ function Signup() {
       return
     }
 
-    // 모든 검증 통과 시 성공 모달 표시
-    // 실제 API 연동 시에는 여기서 fetch 호출
-    console.log({
+    const signupData = {
       email,
       password,
       nickname,
       fuelType,
       radius: parseInt(radius)
-    })
-    setShowSuccessModal(true)
+    }
+
+    signup(signupData)
+      .then(() => {
+        setShowSuccessModal(true)
+      })
+      .catch((error) => {
+        console.error('Signup error:', error)
+        setErrorMessage(error.message)
+        setShowErrorModal(true)
+      })
   }
 
   const handleSuccessModalClose = () => {

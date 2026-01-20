@@ -17,3 +17,18 @@ export const signup = async (signupData) => {
     }
   }
 };
+
+export const login = async (loginData) => {
+  try {
+    const response = await api.post('/auth/login', loginData);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(error.response.data || '로그인 중 오류가 발생했습니다.');
+    } else if (error.request) {
+      throw new Error('서버와 연결할 수 없습니다. 네트워크 상태를 확인해주세요.');
+    } else {
+      throw new Error('요청 설정 중 오류가 발생했습니다.');
+    }
+  }
+};

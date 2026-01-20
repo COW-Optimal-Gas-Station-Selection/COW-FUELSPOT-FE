@@ -15,6 +15,16 @@ export default function UserMenu({ user }) {
   return (
     <div className="flex items-center gap-2 ml-2">
       <span className="font-semibold text-blue-700">{user.name}</span>
+      <Button 
+        className="ml-1 bg-gray-500 hover:bg-gray-600" 
+        onClick={() => {
+          localStorage.removeItem('user')
+          localStorage.removeItem('accessToken')
+          window.location.reload()
+        }}
+      >
+        로그아웃
+      </Button>
       <Button className="ml-1 bg-blue-600 hover:bg-blue-700" onClick={() => alert('마이페이지는 준비중입니다.')}>마이페이지</Button>
     </div>
   )

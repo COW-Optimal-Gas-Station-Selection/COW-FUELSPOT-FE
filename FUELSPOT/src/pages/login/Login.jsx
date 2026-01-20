@@ -91,7 +91,7 @@ function Login() {
             <div className="mt-10 flex flex-col items-center gap-2 animate-bounce opacity-40">
               <span className="text-[10px] font-bold tracking-widest text-gray-400">SCROLL FOR MINI GAME</span>
               <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="19 14l-7 7m0 0l-7-7m7 7V3" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
             </div>
           </div>

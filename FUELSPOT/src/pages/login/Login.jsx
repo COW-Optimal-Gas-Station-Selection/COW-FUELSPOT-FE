@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { login } from '../../api/memberService'
 import Button from '../../components/Button'
 import FindPasswordModal from '../../components/FindPasswordModal'
 import Modal from '../../components/Modal'
@@ -16,6 +17,8 @@ function Login() {
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [showErrorModal, setShowErrorModal] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const [showFindPasswordModal, setShowFindPasswordModal] = useState(false)
 
   const validateEmail = (email) => {
@@ -41,13 +44,41 @@ function Login() {
       return
     }
 
-    // 로그인 성공 모달 표시
-    setShowSuccessModal(true)
+    const loginData = {
+      email,
+      password
+    }
+
+    login(loginData)
+      .then((data) => {
+        // 토큰 저장
+        localStorage.setItem('accessToken', data.accessToken)
+        
+        // 사용자 정보 저장 (MainPageLayout 호환성을 위해 user 객체로도 저장)
+        const user = {
+          id: data.memberId,
+          name: data.nickname, // Header/UserMenu에서 name을 사용함
+          fuelType: data.fuelType,
+          radius: data.radius
+        }
+        localStorage.setItem('user', JSON.stringify(user))
+        
+        setShowSuccessModal(true)
+      })
+      .catch((error) => {
+        console.error('Login error:', error)
+        setErrorMessage(error.message)
+        setShowErrorModal(true)
+      })
   }
 
   const handleModalClose = () => {
     setShowSuccessModal(false)
     navigate('/')
+  }
+
+  const handleErrorModalClose = () => {
+    setShowErrorModal(false)
   }
 
   return (
@@ -91,7 +122,7 @@ function Login() {
             <div className="mt-10 flex flex-col items-center gap-2 animate-bounce opacity-40">
               <span className="text-[10px] font-bold tracking-widest text-gray-400">SCROLL FOR MINI GAME</span>
               <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="19 14l-7 7m0 0l-7-7m7 7V3" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
             </div>
           </div>
@@ -113,6 +144,13 @@ function Login() {
         type="success"
         title="로그인 성공!"
         message="환영합니다. 메인 페이지로 이동합니다."
+      />
+      <Modal
+        isOpen={showErrorModal}
+        onClose={handleErrorModalClose}
+        type="error"
+        title="로그인 실패"
+        message={errorMessage}
       />
       <FindPasswordModal
         isOpen={showFindPasswordModal}

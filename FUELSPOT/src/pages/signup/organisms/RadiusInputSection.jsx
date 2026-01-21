@@ -15,7 +15,7 @@ function RadiusInputSection({ value, onChange, error }) {
           id="radius"
           type="range"
           min="1"
-          max="10"
+          max="5"
           step="1"
           value={value}
           onChange={onChange}
@@ -24,8 +24,8 @@ function RadiusInputSection({ value, onChange, error }) {
       </div>
       <div className="flex justify-between text-[11px] text-gray-400 font-semibold px-0.5 mt-2">
         <span>1km</span>
-        <span className="opacity-50">5km</span>
-        <span>10km</span>
+        <span className="opacity-50">3km</span>
+        <span>5km</span>
       </div>
       <ErrorMessage>{error}</ErrorMessage>
     </div>

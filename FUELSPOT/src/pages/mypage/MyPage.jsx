@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { deleteAccount } from '../../api/memberService'
+import { deleteAccount, getMyInfo, updateMyInfo } from '../../api/memberService'
 import Button from '../../components/Button'
 import Modal from '../../components/Modal'
 import FuelTypeInputSection from '../signup/organisms/FuelTypeInputSection'
@@ -26,24 +26,25 @@ function MyPage() {
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    const userStr = localStorage.getItem('user')
-    if (userStr) {
-      const userData = JSON.parse(userStr)
-      setUser(userData)
-      setNickname(userData.name || '')
-      setFuelType(userData.fuelType || 'GASOLINE')
-      setRadius(userData.radius || 3)
-    } else {
-      // 로그인 안되어 있으면 로그인 페이지로
-      navigate('/login')
-    }
+    // 내 정보 조회 API 연동
+    getMyInfo()
+      .then((userData) => {
+        setUser(userData)
+        setNickname(userData.name || '')
+        setFuelType(userData.fuelType || 'GASOLINE')
+        setRadius(userData.radius || 3)
+      })
+      .catch(() => {
+        // 로그인 안되어 있으면 로그인 페이지로
+        navigate('/login')
+      })
   }, [navigate])
 
   const nicknameRequirements = {
     isLengthValid: nickname.length >= 2 && nickname.length <= 10
   }
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     setNicknameError('')
     setFuelTypeError('')
     setRadiusError('')
@@ -59,20 +60,16 @@ function MyPage() {
     }
 
     try {
-      const userStr = localStorage.getItem('user')
-      if (userStr) {
-        const user = JSON.parse(userStr)
-        const updatedUser = {
-          ...user,
-          name: nickname,
-          fuelType: fuelType,
-          radius: parseInt(radius)
-        }
-        localStorage.setItem('user', JSON.stringify(updatedUser))
-        setShowSuccessModal(true)
+      const updateData = {
+        name: nickname,
+        fuelType: fuelType,
+        radius: parseInt(radius)
       }
+      const updatedUser = await updateMyInfo(updateData)
+      setUser(updatedUser)
+      setShowSuccessModal(true)
     } catch (error) {
-      setErrorMessage('정보 수정 중 오류가 발생했습니다.')
+      setErrorMessage(error.message || '정보 수정 중 오류가 발생했습니다.')
       setShowErrorModal(true)
     }
   }

@@ -51,19 +51,22 @@ function Login() {
 
     login(loginData)
       .then((data) => {
-        // 토큰 저장
-        localStorage.setItem('accessToken', data.accessToken)
-        
-        // 사용자 정보 저장 (MainPageLayout 호환성을 위해 user 객체로도 저장)
-        const user = {
-          id: data.memberId,
-          name: data.nickname, // Header/UserMenu에서 name을 사용함
-          fuelType: data.fuelType,
-          radius: data.radius
+        if (data.isSuccess) {
+          // 토큰 저장
+          localStorage.setItem('accessToken', data.accessToken)
+          // 사용자 정보 저장 (MainPageLayout 호환성을 위해 user 객체로도 저장)
+          const user = {
+            id: data.memberId,
+            name: data.nickname,
+            fuelType: data.fuelType,
+            radius: data.radius
+          }
+          localStorage.setItem('user', JSON.stringify(user))
+          setShowSuccessModal(true)
+        } else {
+          setErrorMessage(data.message || '아이디 또는 비밀번호가 올바르지 않습니다.')
+          setShowErrorModal(true)
         }
-        localStorage.setItem('user', JSON.stringify(user))
-        
-        setShowSuccessModal(true)
       })
       .catch((error) => {
         console.error('Login error:', error)

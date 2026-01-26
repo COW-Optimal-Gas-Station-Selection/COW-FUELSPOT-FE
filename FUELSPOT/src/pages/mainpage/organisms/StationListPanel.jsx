@@ -65,7 +65,7 @@ const StationListPanel = forwardRef(({ stations = [], onStationClick, onNavigate
       <div className="bg-[#f9fafb] border-b border-gray-100 p-4 flex items-center gap-2 justify-between shrink-0">
         <div className="flex items-center gap-2">
           <h2 className="text-[#1e2939] text-xl font-bold flex items-center gap-2">
-            <span className="inline-block align-middle">⛽</span> 주유소 목록
+            주유소 목록
           </h2>
           <span className="text-[#155dfc] text-xl font-bold">({stations.length}개)</span>
         </div>

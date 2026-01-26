@@ -11,8 +11,9 @@ import { useRef } from 'react';
 const MainPageLayout = ({ stations }) => {
   const [selectedStation, setSelectedStation] = useState(null);
   const [routeTo, setRouteTo] = useState(null); 
-  const [currentLocation, setCurrentLocation] = useState({ lat: 37.5665, lng: 126.9780 }); 
+  const [currentLocation, setCurrentLocation] = useState({ lat: 37.5665, lng: 126.9780 });
   const [user, setUser] = useState(null);
+
   useEffect(() => {
     const userStr = localStorage.getItem('user');
     if (userStr) {
@@ -77,19 +78,19 @@ const MainPageLayout = ({ stations }) => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#f9fafb] overflow-hidden">
-      <Header onLocationClick={handleLocationClick} user={user} />
-      <div className="flex-1 flex flex-col min-h-0 relative">
-        <main className="flex-1 max-w-[1248px] mx-auto w-full p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-0 overflow-hidden">
-          <MapViewPanel stations={stations} selectedStation={selectedStation} onMarkerClick={handleMarkerClick} routeTo={routeTo} currentLocation={currentLocation} />
-          <StationListPanel stations={stations} onStationClick={setSelectedStation} onNavigate={handleNavigate} ref={listPanelRef} />
-        </main>
-        
-        {/* 오른쪽 평균 유가 패널 - 메인 패널 위치에 영향을 주지 않도록 absolute 배치 */}
-        <aside className="hidden xl:block absolute left-[calc(50%+640px)] top-6 w-[260px] h-fit">
-          <AverageFuelPricePanel />
-        </aside>
-      </div>
+    <div className="flex flex-col h-screen bg-[#f9fafb]">
+      <Header user={user} />
+      <main className="flex-1 max-w-[1248px] mx-auto w-full p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-hidden">
+        <MapViewPanel 
+          stations={stations} 
+          selectedStation={selectedStation} 
+          onMarkerClick={handleMarkerClick} 
+          routeTo={routeTo} 
+          currentLocation={currentLocation}
+          onLocationClick={handleLocationClick}
+        />
+        <StationListPanel stations={stations} onStationClick={setSelectedStation} onNavigate={handleNavigate} ref={listPanelRef} />
+      </main>
     </div>
   );
 };

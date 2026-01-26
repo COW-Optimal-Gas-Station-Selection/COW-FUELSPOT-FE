@@ -1,6 +1,7 @@
 import PointIcon from '../../../assets/icon/point.svg?react';
 import FuelPriceBox from '../../../components/FuelPriceBox';
 import GasBrandIconBox from '../../../components/GasBrandIconBox';
+import { mockFavoriteCounts } from '../api/mockFavoriteCounts';
 
 const StationCard = ({ station, onClick, onNavigate, ...props }) => {
   return (
@@ -24,7 +25,12 @@ const StationCard = ({ station, onClick, onNavigate, ...props }) => {
         ))}
       </div>
       <div className="flex items-center justify-between mt-1 gap-2">
-        <div className="text-[#155dfc] text-sm font-medium">{station.distance}</div>
+        <div className="flex flex-col items-start gap-1">
+          <div className="text-[#155dfc] text-sm font-medium">{station.distance}</div>
+          <span className="text-xs text-gray-400 bg-gray-50 rounded px-2 py-0.5 border border-gray-200 mt-1">
+            {mockFavoriteCounts[station.id] || 0}명 즐겨찾기
+          </span>
+        </div>
         <button
           className="px-3 py-1 rounded bg-[#155dfc] text-white text-xs font-semibold hover:bg-[#0d3fa6] transition-colors w-fit"
           onClick={e => {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { STATIONS } from '../../../constants/stations'
+import { mockFavoriteCounts } from '../../mainpage/api/mockFavoriteCounts'
 import FavoriteButton from '../../mainpage/atoms/FavoriteButton'
 import StationCard from '../../mainpage/molecules/StationCard'
 
@@ -33,12 +34,15 @@ function FavoriteStationsSection() {
           favoriteStations.map(station => (
             <div key={station.id} className="relative bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
               <StationCard station={station} />
-              <div className="absolute top-4 right-4 z-[1]">
+              <div className="absolute top-4 right-4 z-[1] flex flex-col items-end gap-2">
                 <FavoriteButton
                   stationId={station.id}
                   isFavorite={true}
                   onToggle={handleToggleFavorite}
                 />
+                <span className="text-xs text-gray-400 bg-gray-50 rounded px-2 py-0.5 border border-gray-200 mt-1">
+                  {mockFavoriteCounts[station.id] || 0}명 즐겨찾기
+                </span>
               </div>
             </div>
           ))

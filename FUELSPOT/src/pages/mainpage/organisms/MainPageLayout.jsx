@@ -79,8 +79,8 @@ const MainPageLayout = ({ stations }) => {
   return (
     <div className="flex flex-col h-screen bg-[#f9fafb] overflow-hidden">
       <Header onLocationClick={handleLocationClick} user={user} />
-      <div className="flex-1 relative">
-        <main className="flex-1 max-w-[1248px] mx-auto w-full h-full p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-0 relative">
+        <main className="flex-1 max-w-[1248px] mx-auto w-full p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-0 overflow-hidden">
           <MapViewPanel stations={stations} selectedStation={selectedStation} onMarkerClick={handleMarkerClick} routeTo={routeTo} currentLocation={currentLocation} />
           <StationListPanel stations={stations} onStationClick={setSelectedStation} onNavigate={handleNavigate} ref={listPanelRef} />
         </main>

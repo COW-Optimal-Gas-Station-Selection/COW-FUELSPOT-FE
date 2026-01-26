@@ -62,7 +62,7 @@ const StationListPanel = forwardRef(({ stations = [], onStationClick, onNavigate
 
   return (
     <div ref={ref} className="bg-white rounded-[10px] shadow-sm overflow-hidden flex flex-col border border-gray-100 h-full">
-      <div className="bg-[#f9fafb] border-b border-gray-100 p-4 flex items-center gap-2 sticky top-0 z-10 justify-between">
+      <div className="bg-[#f9fafb] border-b border-gray-100 p-4 flex items-center gap-2 justify-between shrink-0">
         <div className="flex items-center gap-2">
           <h2 className="text-[#1e2939] text-xl font-bold flex items-center gap-2">
             <span className="inline-block align-middle">⛽</span> 주유소 목록
@@ -71,7 +71,7 @@ const StationListPanel = forwardRef(({ stations = [], onStationClick, onNavigate
         </div>
         <StationFilterBox sortType={sortType} onSortChange={handleSortChange} />
       </div>
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
         {sortedStations.map(station => (
           <StationCard
             key={station.id}

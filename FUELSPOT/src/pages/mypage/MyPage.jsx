@@ -13,10 +13,17 @@ import MyPageNavBar from './organisms/MyPageNavBar'
 
 function MyPage() {
   const navigate = useNavigate()
-  const [user, setUser] = useState(null)
-  const [nickname, setNickname] = useState('')
-  const [fuelType, setFuelType] = useState('GASOLINE')
-  const [radius, setRadius] = useState(3)
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('user')
+    try {
+      return saved ? JSON.parse(saved) : null
+    } catch {
+      return null
+    }
+  })
+  const [nickname, setNickname] = useState(user?.nickname || user?.name || '')
+  const [fuelType, setFuelType] = useState(user?.fuelType || 'GASOLINE')
+  const [radius, setRadius] = useState(user?.radius || 3)
   
   const [nicknameError, setNicknameError] = useState('')
   const [fuelTypeError, setFuelTypeError] = useState('')
@@ -35,6 +42,8 @@ function MyPage() {
         setNickname(userData.nickname || '')
         setFuelType(userData.fuelType || 'GASOLINE')
         setRadius(userData.radius || 3)
+        // 로컬 스토리지 데이터 동기화
+        localStorage.setItem('user', JSON.stringify(userData))
       })
       .catch(() => {
         // 로그인 안되어 있으면 로그인 페이지로
@@ -69,6 +78,7 @@ function MyPage() {
       }
       const updatedUser = await updateMyInfo(updateData)
       setUser(updatedUser)
+      localStorage.setItem('user', JSON.stringify(updatedUser))
       setShowSuccessModal(true)
     } catch (error) {
       setErrorMessage(error.message || '정보 수정 중 오류가 발생했습니다.')
@@ -149,7 +159,7 @@ function MyPage() {
                 <span className="w-1.5 h-6 bg-yellow-400 rounded-full"></span>
                 즐겨찾는 주유소
               </h2>
-              <div className="flex-1">
+              <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
                 <FavoriteStationsSection />
               </div>
             </div>

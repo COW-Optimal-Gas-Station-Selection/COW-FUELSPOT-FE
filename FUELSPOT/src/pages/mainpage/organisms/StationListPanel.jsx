@@ -1,6 +1,5 @@
 import { forwardRef, useEffect, useState } from 'react';
 import { FUEL_TYPE } from '../../../components/FuelPriceBox';
-import FavoriteButton from '../atoms/FavoriteButton';
 import StationFilterBox from '../atoms/StationFilterBox';
 import StationCard from '../molecules/StationCard';
 
@@ -74,21 +73,15 @@ const StationListPanel = forwardRef(({ stations = [], onStationClick, onNavigate
       </div>
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {sortedStations.map(station => (
-          <div key={station.id} className="relative group">
-            <StationCard
-              station={station}
-              onClick={() => onStationClick && onStationClick(station)}
-              onNavigate={onNavigate}
-              data-station-id={station.id}
-            />
-            <div className="absolute top-4 right-4 z-[1]">
-              <FavoriteButton
-                stationId={station.id}
-                isFavorite={favoriteIds.includes(station.id)}
-                onToggle={handleToggleFavorite}
-              />
-            </div>
-          </div>
+          <StationCard
+            key={station.id}
+            station={station}
+            onClick={() => onStationClick && onStationClick(station)}
+            onNavigate={onNavigate}
+            isFavorite={favoriteIds.includes(station.id)}
+            onToggleFavorite={handleToggleFavorite}
+            data-station-id={station.id}
+          />
         ))}
       </div>
     </div>

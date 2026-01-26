@@ -32,7 +32,7 @@ function MyPage() {
     getMyInfo()
       .then((userData) => {
         setUser(userData)
-        setNickname(userData.name || '')
+        setNickname(userData.nickname || '')
         setFuelType(userData.fuelType || 'GASOLINE')
         setRadius(userData.radius || 3)
       })
@@ -63,7 +63,7 @@ function MyPage() {
 
     try {
       const updateData = {
-        name: nickname,
+        nickname: nickname,
         fuelType: fuelType,
         radius: parseInt(radius)
       }

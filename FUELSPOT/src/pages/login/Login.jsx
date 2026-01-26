@@ -57,7 +57,7 @@ function Login() {
           // 사용자 정보 저장 (MainPageLayout 호환성을 위해 user 객체로도 저장)
           const user = {
             id: data.memberId,
-            name: data.nickname,
+            nickname: data.nickname,
             fuelType: data.fuelType,
             radius: data.radius
           }

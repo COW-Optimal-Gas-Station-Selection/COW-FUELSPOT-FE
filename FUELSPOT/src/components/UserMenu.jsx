@@ -27,7 +27,7 @@ export default function UserMenu({ user }) {
           </svg>
         </div>
         <span className="font-bold text-gray-700 group-hover:text-blue-600 transition-colors hidden sm:block">
-          {user.name}님
+          {user.nickname}님
         </span>
       </div>
       {isMyPage && (

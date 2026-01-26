@@ -9,8 +9,9 @@ import { useRef } from 'react';
 const MainPageLayout = ({ stations }) => {
   const [selectedStation, setSelectedStation] = useState(null);
   const [routeTo, setRouteTo] = useState(null); 
-  const [currentLocation, setCurrentLocation] = useState({ lat: 37.5665, lng: 126.9780 }); 
+  const [currentLocation, setCurrentLocation] = useState({ lat: 37.5665, lng: 126.9780 });
   const [user, setUser] = useState(null);
+
   useEffect(() => {
     const userStr = localStorage.getItem('user');
     if (userStr) {
@@ -76,9 +77,16 @@ const MainPageLayout = ({ stations }) => {
 
   return (
     <div className="flex flex-col h-screen bg-[#f9fafb]">
-      <Header onLocationClick={handleLocationClick} user={user} />
+      <Header user={user} />
       <main className="flex-1 max-w-[1248px] mx-auto w-full p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-hidden">
-        <MapViewPanel stations={stations} selectedStation={selectedStation} onMarkerClick={handleMarkerClick} routeTo={routeTo} currentLocation={currentLocation} />
+        <MapViewPanel 
+          stations={stations} 
+          selectedStation={selectedStation} 
+          onMarkerClick={handleMarkerClick} 
+          routeTo={routeTo} 
+          currentLocation={currentLocation}
+          onLocationClick={handleLocationClick}
+        />
         <StationListPanel stations={stations} onStationClick={setSelectedStation} onNavigate={handleNavigate} ref={listPanelRef} />
       </main>
     </div>

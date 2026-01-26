@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+* {
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+}
+
 @theme {
   --animate-wave: wave 15s linear infinite;
   --animate-wave-slow: wave 20s linear infinite;

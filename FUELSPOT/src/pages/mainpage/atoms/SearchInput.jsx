@@ -3,7 +3,7 @@ import Input from '../../../components/Input';
 
 const SearchInput = ({ className = '', ...props }) => (
   <div className="relative w-full">
-    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10">
+    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-0 pointer-events-none">
       <SearchIcon className="w-5 h-5 md:w-6 md:h-6" />
     </span>
     <Input

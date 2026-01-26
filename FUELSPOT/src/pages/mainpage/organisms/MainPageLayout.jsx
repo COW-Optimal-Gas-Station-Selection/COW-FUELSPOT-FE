@@ -1,5 +1,7 @@
 
 import { useEffect, useState } from 'react';
+
+import AverageFuelPricePanel from './AverageFuelPricePanel';
 import Header from './Header';
 import MapViewPanel from './MapViewPanel';
 import StationListPanel from './StationListPanel';

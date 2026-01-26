@@ -1,20 +1,29 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { deleteAccount } from '../../api/memberService'
+import { deleteAccount, getMyInfo, updateMyInfo } from '../../api/memberService'
 import Button from '../../components/Button'
-import Modal from '../../components/Modal'
 import FuelTypeInputSection from '../signup/organisms/FuelTypeInputSection'
 import NameInputSection from '../signup/organisms/NameInputSection'
 import RadiusInputSection from '../signup/organisms/RadiusInputSection'
+import DeleteConfirmModal from './molecules/DeleteConfirmModal'
+import ErrorModal from './molecules/ErrorModal'
+import SuccessModal from './molecules/SuccessModal'
 import FavoriteStationsSection from './organisms/FavoriteStationsSection'
 import MyPageNavBar from './organisms/MyPageNavBar'
 
 function MyPage() {
   const navigate = useNavigate()
-  const [user, setUser] = useState(null)
-  const [nickname, setNickname] = useState('')
-  const [fuelType, setFuelType] = useState('GASOLINE')
-  const [radius, setRadius] = useState(3)
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('user')
+    try {
+      return saved ? JSON.parse(saved) : null
+    } catch {
+      return null
+    }
+  })
+  const [nickname, setNickname] = useState(user?.nickname || user?.name || '')
+  const [fuelType, setFuelType] = useState(user?.fuelType || 'GASOLINE')
+  const [radius, setRadius] = useState(user?.radius || 3)
   
   const [nicknameError, setNicknameError] = useState('')
   const [fuelTypeError, setFuelTypeError] = useState('')
@@ -26,24 +35,27 @@ function MyPage() {
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    const userStr = localStorage.getItem('user')
-    if (userStr) {
-      const userData = JSON.parse(userStr)
-      setUser(userData)
-      setNickname(userData.name || '')
-      setFuelType(userData.fuelType || 'GASOLINE')
-      setRadius(userData.radius || 3)
-    } else {
-      // 로그인 안되어 있으면 로그인 페이지로
-      navigate('/login')
-    }
+    // 내 정보 조회 API 연동
+    getMyInfo()
+      .then((userData) => {
+        setUser(userData)
+        setNickname(userData.nickname || '')
+        setFuelType(userData.fuelType || 'GASOLINE')
+        setRadius(userData.radius || 3)
+        // 로컬 스토리지 데이터 동기화
+        localStorage.setItem('user', JSON.stringify(userData))
+      })
+      .catch(() => {
+        // 로그인 안되어 있으면 로그인 페이지로
+        navigate('/login')
+      })
   }, [navigate])
 
   const nicknameRequirements = {
     isLengthValid: nickname.length >= 2 && nickname.length <= 10
   }
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     setNicknameError('')
     setFuelTypeError('')
     setRadiusError('')
@@ -59,20 +71,17 @@ function MyPage() {
     }
 
     try {
-      const userStr = localStorage.getItem('user')
-      if (userStr) {
-        const user = JSON.parse(userStr)
-        const updatedUser = {
-          ...user,
-          name: nickname,
-          fuelType: fuelType,
-          radius: parseInt(radius)
-        }
-        localStorage.setItem('user', JSON.stringify(updatedUser))
-        setShowSuccessModal(true)
+      const updateData = {
+        nickname: nickname,
+        fuelType: fuelType,
+        radius: parseInt(radius)
       }
+      const updatedUser = await updateMyInfo(updateData)
+      setUser(updatedUser)
+      localStorage.setItem('user', JSON.stringify(updatedUser))
+      setShowSuccessModal(true)
     } catch (error) {
-      setErrorMessage('정보 수정 중 오류가 발생했습니다.')
+      setErrorMessage(error.message || '정보 수정 중 오류가 발생했습니다.')
       setShowErrorModal(true)
     }
   }
@@ -109,7 +118,6 @@ function MyPage() {
                 <span className="w-1.5 h-6 bg-blue-600 rounded-full"></span>
                 회원 정보 수정
               </h2>
-              
               <div className="space-y-8">
                 <NameInputSection
                   value={nickname}
@@ -117,19 +125,16 @@ function MyPage() {
                   error={nicknameError}
                   requirements={nicknameRequirements}
                 />
-                
                 <FuelTypeInputSection
                   value={fuelType}
                   onChange={(val) => setFuelType(val)}
                   error={fuelTypeError}
                 />
-                
                 <RadiusInputSection
                   value={radius}
                   onChange={(e) => setRadius(e.target.value)}
                   error={radiusError}
                 />
-
                 <div className="pt-4 flex flex-col sm:flex-row gap-3">
                   <Button onClick={handleUpdate} variant="primary" className="flex-1 h-14 text-lg font-bold">
                     정보 수정하기
@@ -138,7 +143,6 @@ function MyPage() {
                     취소
                   </Button>
                 </div>
-
                 <div className="pt-8 border-t border-gray-100 flex justify-center">
                   <button 
                     onClick={() => setShowDeleteConfirmModal(true)}
@@ -149,73 +153,22 @@ function MyPage() {
                 </div>
               </div>
             </div>
-
             {/* Right Panel: Favorites */}
             <div className="bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] p-8 md:p-10 border border-gray-100 h-full min-h-[600px] flex flex-col">
               <h2 className="text-xl font-bold text-gray-800 mb-8 flex items-center gap-2">
                 <span className="w-1.5 h-6 bg-yellow-400 rounded-full"></span>
                 즐겨찾는 주유소
               </h2>
-              <div className="flex-1">
+              <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
                 <FavoriteStationsSection />
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      {showSuccessModal && (
-        <Modal 
-          onClose={handleSuccessModalClose}
-          title="수정 성공"
-        >
-          <div className="text-center">
-            <p className="text-gray-600 mb-6">회원 정보가 성공적으로 수정되었습니다.</p>
-            <Button onClick={handleSuccessModalClose} variant="primary" className="w-full">
-              확인
-            </Button>
-          </div>
-        </Modal>
-      )}
-
-      {showErrorModal && (
-        <Modal 
-          onClose={() => setShowErrorModal(false)}
-          title="오류 발생"
-        >
-          <div className="text-center">
-            <p className="text-red-500 mb-6">{errorMessage}</p>
-            <Button onClick={() => setShowErrorModal(false)} variant="primary" className="w-full">
-              확인
-            </Button>
-          </div>
-        </Modal>
-      )}
-
-      {showDeleteConfirmModal && (
-        <Modal 
-          onClose={() => setShowDeleteConfirmModal(false)}
-          title="회원 탈퇴"
-        >
-          <div className="text-center">
-            <div className="flex justify-center mb-6">
-              <FuelspotLogo className="h-16" />
-            </div>
-            <div className="bg-red-50 text-red-600 p-4 rounded-2xl mb-6 text-sm font-medium">
-              정말로 탈퇴하시겠습니까? <br />
-              즐겨찾기 목록을 포함한 모든 정보가 삭제됩니다.
-            </div>
-            <div className="flex gap-3">
-              <Button onClick={() => setShowDeleteConfirmModal(false)} variant="primary" className="flex-1">
-                취소
-              </Button>
-              <Button onClick={handleDeleteAccount} variant="error-outline" className="flex-1">
-                탈퇴하기
-              </Button>
-            </div>
-          </div>
-        </Modal>
-      )}
+      <SuccessModal open={showSuccessModal} onClose={handleSuccessModalClose} />
+      <ErrorModal open={showErrorModal} onClose={() => setShowErrorModal(false)} errorMessage={errorMessage} />
+      <DeleteConfirmModal open={showDeleteConfirmModal} onClose={() => setShowDeleteConfirmModal(false)} onDelete={handleDeleteAccount} />
     </>
   )
 }

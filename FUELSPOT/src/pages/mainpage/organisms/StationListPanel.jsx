@@ -1,6 +1,5 @@
 import { forwardRef, useEffect, useState } from 'react';
 import { FUEL_TYPE } from '../../../components/FuelPriceBox';
-import FavoriteButton from '../atoms/FavoriteButton';
 import StationFilterBox from '../atoms/StationFilterBox';
 import StationCard from '../molecules/StationCard';
 
@@ -63,7 +62,7 @@ const StationListPanel = forwardRef(({ stations = [], onStationClick, onNavigate
 
   return (
     <div ref={ref} className="bg-white rounded-[10px] shadow-sm overflow-hidden flex flex-col border border-gray-100 h-full">
-      <div className="bg-[#f9fafb] border-b border-gray-100 p-4 flex items-center gap-2 sticky top-0 z-10 justify-between">
+      <div className="bg-[#f9fafb] border-b border-gray-100 p-4 flex items-center gap-2 justify-between shrink-0">
         <div className="flex items-center gap-2">
           <h2 className="text-[#1e2939] text-xl font-bold flex items-center gap-2">
             주유소 목록
@@ -72,23 +71,17 @@ const StationListPanel = forwardRef(({ stations = [], onStationClick, onNavigate
         </div>
         <StationFilterBox sortType={sortType} onSortChange={handleSortChange} />
       </div>
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
         {sortedStations.map(station => (
-          <div key={station.id} className="relative group">
-            <StationCard
-              station={station}
-              onClick={() => onStationClick && onStationClick(station)}
-              onNavigate={onNavigate}
-              data-station-id={station.id}
-            />
-            <div className="absolute top-4 right-4 z-[1]">
-              <FavoriteButton
-                stationId={station.id}
-                isFavorite={favoriteIds.includes(station.id)}
-                onToggle={handleToggleFavorite}
-              />
-            </div>
-          </div>
+          <StationCard
+            key={station.id}
+            station={station}
+            onClick={() => onStationClick && onStationClick(station)}
+            onNavigate={onNavigate}
+            isFavorite={favoriteIds.includes(station.id)}
+            onToggleFavorite={handleToggleFavorite}
+            data-station-id={station.id}
+          />
         ))}
       </div>
     </div>

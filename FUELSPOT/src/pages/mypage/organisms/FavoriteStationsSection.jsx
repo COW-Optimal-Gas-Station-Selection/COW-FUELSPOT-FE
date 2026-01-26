@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { STATIONS } from '../../../constants/stations'
-import FavoriteButton from '../../mainpage/atoms/FavoriteButton'
 import StationCard from '../../mainpage/molecules/StationCard'
 
 function FavoriteStationsSection() {
@@ -31,16 +30,13 @@ function FavoriteStationsSection() {
       <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar flex-1">
         {favoriteStations.length > 0 ? (
           favoriteStations.map(station => (
-            <div key={station.id} className="relative bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-              <StationCard station={station} />
-              <div className="absolute top-4 right-4 z-[1]">
-                <FavoriteButton
-                  stationId={station.id}
-                  isFavorite={true}
-                  onToggle={handleToggleFavorite}
-                />
-              </div>
-            </div>
+            <StationCard 
+              key={station.id}
+              station={station}
+              isFavorite={true}
+              onToggleFavorite={handleToggleFavorite}
+              className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden mb-4 last:mb-0"
+            />
           ))
         ) : (
           <div className="py-10 text-center text-gray-400 text-sm italic">

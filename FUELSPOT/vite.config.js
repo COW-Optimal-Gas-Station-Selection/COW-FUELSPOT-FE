@@ -9,6 +9,9 @@ export default defineConfig(({ mode }) => {
     plugins: [react(), svgr({
       exportAsDefault: true,
     })],
+    build: {
+      sourcemap: true,
+    },
     server: {
       proxy: {
         '/api': {

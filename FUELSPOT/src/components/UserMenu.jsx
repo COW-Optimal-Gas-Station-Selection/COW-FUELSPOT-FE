@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom'
+import { logout } from '../api/memberService'
 import Button from './Button'
 
 export default function UserMenu({ user }) {
@@ -27,17 +28,24 @@ export default function UserMenu({ user }) {
           </svg>
         </div>
         <span className="font-bold text-gray-700 group-hover:text-blue-600 transition-colors hidden sm:block">
-          {user.name}님
+          {(user.nickname || user.name)}님
         </span>
       </div>
       {isMyPage && (
         <Button 
           variant="error-outline"
           className="h-9 px-3 text-xs font-bold border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200" 
-          onClick={() => {
-            localStorage.removeItem('user')
-            localStorage.removeItem('accessToken')
-            window.location.reload()
+          onClick={async () => {
+            try {
+              await logout()
+            } catch (error) {
+              console.error('Logout failed:', error)
+            } finally {
+              localStorage.removeItem('user')
+              localStorage.removeItem('accessToken')
+              localStorage.removeItem('refreshToken')
+              window.location.reload()
+            }
           }}
         >
           로그아웃

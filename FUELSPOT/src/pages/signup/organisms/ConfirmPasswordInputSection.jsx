@@ -3,10 +3,10 @@ import Label from '../atoms/Label'
 import RequirementItem from '../atoms/RequirementItem'
 import PasswordInputWithToggle from '../molecules/PasswordInputWithToggle'
 
-function ConfirmPasswordInputSection({ value, onChange, error, requirements }) {
+function ConfirmPasswordInputSection({ value, onChange, error, requirements, label = "비밀번호 확인" }) {
   return (
     <div className="mb-6">
-      <Label htmlFor="confirmPassword">비밀번호 확인</Label>
+      <Label htmlFor="confirmPassword">{label}</Label>
       <PasswordInputWithToggle
         id="confirmPassword"
         value={value}

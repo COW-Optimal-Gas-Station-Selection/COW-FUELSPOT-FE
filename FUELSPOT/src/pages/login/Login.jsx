@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { login } from '../../api/memberService'
 import Button from '../../components/Button'
-import FindPasswordModal from '../../components/FindPasswordModal'
 import Modal from '../../components/Modal'
 import GasFillingGame from './components/GasFillingGame'
 import EmailInputSection from './organisms/EmailInputSection'
+import FindPasswordModal from './organisms/FindPasswordModal'
 import LoginFooter from './organisms/LoginFooter'
 import LoginHeader from './organisms/LoginHeader'
 import PasswordInputSection from './organisms/PasswordInputSection'
@@ -51,19 +51,24 @@ function Login() {
 
     login(loginData)
       .then((data) => {
-        // 토큰 저장
-        localStorage.setItem('accessToken', data.accessToken)
-        
-        // 사용자 정보 저장 (MainPageLayout 호환성을 위해 user 객체로도 저장)
-        const user = {
-          id: data.memberId,
-          name: data.nickname, // Header/UserMenu에서 name을 사용함
-          fuelType: data.fuelType,
-          radius: data.radius
+        if (data.isSuccess) {
+
+          localStorage.setItem('accessToken', data.tokenDto.accessToken)
+          localStorage.setItem('refreshToken', data.tokenDto.refreshToken)
+          
+
+          const user = {
+            id: data.memberId,
+            nickname: data.nickname,
+            fuelType: data.fuelType,
+            radius: data.radius
+          }
+          localStorage.setItem('user', JSON.stringify(user))
+          setShowSuccessModal(true)
+        } else {
+          setErrorMessage(data.message || '아이디 또는 비밀번호가 올바르지 않습니다.')
+          setShowErrorModal(true)
         }
-        localStorage.setItem('user', JSON.stringify(user))
-        
-        setShowSuccessModal(true)
       })
       .catch((error) => {
         console.error('Login error:', error)

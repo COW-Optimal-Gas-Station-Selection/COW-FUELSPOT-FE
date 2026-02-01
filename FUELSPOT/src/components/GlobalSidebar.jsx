@@ -21,7 +21,6 @@ function GlobalSidebar() {
     }
   }, [location]);
 
-  // 로그인/회원가입 페이지에서는 사이드바 숨김
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
   
   if (isAuthPage) {

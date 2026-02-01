@@ -4,9 +4,10 @@ export enum FUEL_TYPE {
   GASOLINE = '휘발유',
   DIESEL = '경유',
   PREMIUM = '고급휘발유',
+  LPG = '자동차부탄',
 }
 
-type FuelType = FUEL_TYPE.GASOLINE | FUEL_TYPE.DIESEL | FUEL_TYPE.PREMIUM;
+type FuelType = FUEL_TYPE.GASOLINE | FUEL_TYPE.DIESEL | FUEL_TYPE.PREMIUM | FUEL_TYPE.LPG;
 
 const FUEL_STYLE: Record<FuelType, { bg: string; label: string; price: string; border: string }> = {
   [FUEL_TYPE.GASOLINE]: {
@@ -26,6 +27,12 @@ const FUEL_STYLE: Record<FuelType, { bg: string; label: string; price: string; b
     border: 'border-[#f3e8ff]',
     label: 'text-[#71717a]',
     price: 'text-[#8200db]',
+  },
+  [FUEL_TYPE.LPG]: {
+    bg: 'bg-[#f0f9ff]',
+    border: 'border-[#bae6fd]',
+    label: 'text-[#71717a]',
+    price: 'text-[#0369a1]',
   },
 };
 

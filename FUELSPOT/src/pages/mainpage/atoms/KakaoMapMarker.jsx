@@ -8,7 +8,6 @@ const KakaoMapMarker = ({ mapInstance, position, station, onClick }) => {
   useEffect(() => {
     if (!mapInstance || !position) return;
 
-    // 마커 생성
     const marker = new window.kakao.maps.Marker({
       position,
       map: mapInstance,

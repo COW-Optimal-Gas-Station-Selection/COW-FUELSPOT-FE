@@ -87,6 +87,7 @@ function MyPage() {
       .then(() => {
         localStorage.removeItem('user')
         localStorage.removeItem('accessToken')
+        localStorage.removeItem('refreshToken')
         navigate('/login')
       })
       .catch((error) => {

@@ -33,6 +33,17 @@ export const login = async (loginData) => {
   }
 };
 
+export const logout = async () => {
+  try {
+    const response = await api.post('/auth/logout');
+    return response.data;
+  } catch (error) {
+    // 로그아웃 실패하더라도 프론트에서는 토큰을 지워야 하므로 에러만 던지거나 로그 남김
+    console.error('Logout error:', error);
+    throw error;
+  }
+};
+
 export const deleteAccount = async () => {
   try {
     const response = await api.delete('/members');

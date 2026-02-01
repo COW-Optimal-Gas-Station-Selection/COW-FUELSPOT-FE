@@ -8,13 +8,14 @@ import StationCard from '../molecules/StationCard';
 
 const getLocalFavoriteIds = () => {
   try {
-    return JSON.parse(localStorage.getItem('favoriteStations') || '[]');
+    const ids = JSON.parse(localStorage.getItem('favoriteStations') || '[]');
+    return ids.map(id => String(id));
   } catch {
     return [];
   }
 };
 
-const StationListPanel = forwardRef(({ stations = [], onStationClick, onNavigate }, ref) => {
+const StationListPanel = forwardRef(({ stations = [], selectedStationId, onStationClick, onNavigate }, ref) => {
   const [sortType, setSortType] = useState('distance');
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -33,10 +34,10 @@ const StationListPanel = forwardRef(({ stations = [], onStationClick, onNavigate
   const loadBackendFavorites = async () => {
     try {
       const data = await getFavorites();
-      setFavoriteIds(data.map(f => f.stationId));
+      setFavoriteIds(data.map(f => String(f.stationId)));
     } catch (error) {
       console.error('Failed to load backend favorites:', error);
-      setFavoriteIds(getLocalFavoriteIds());
+      setFavoriteIds(getLocalFavoriteIds().map(id => String(id)));
     }
   };
 
@@ -45,29 +46,21 @@ const StationListPanel = forwardRef(({ stations = [], onStationClick, onNavigate
   };
 
   const handleToggleFavorite = async (stationId) => {
-    if (isLoggedIn) {
-      try {
-        if (favoriteIds.includes(stationId)) {
-          await removeFavorite(stationId);
-          setFavoriteIds(prev => prev.filter(id => id !== stationId));
-        } else {
-          await addFavorite(stationId);
-          setFavoriteIds(prev => [...prev, stationId]);
-        }
-      } catch (error) {
-        alert('즐겨찾기 처리 중 오류가 발생했습니다.');
-      }
-    } else {
-      // Guest logic (localStorage)
-      let next;
-      const currentLocal = getLocalFavoriteIds();
-      if (currentLocal.includes(stationId)) {
-        next = currentLocal.filter(id => id !== stationId);
+    if (!isLoggedIn) {
+      alert('즐겨찾기 기능을 이용하려면 로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      if (favoriteIds.includes(stationId)) {
+        await removeFavorite(stationId);
+        setFavoriteIds(prev => prev.filter(id => id !== stationId));
       } else {
-        next = [...currentLocal, stationId];
+        await addFavorite(stationId);
+        setFavoriteIds(prev => [...prev, stationId]);
       }
-      setFavoriteIds(next);
-      localStorage.setItem('favoriteStations', JSON.stringify(next));
+    } catch (error) {
+      alert('즐겨찾기 처리 중 오류가 발생했습니다.');
     }
   };
 
@@ -93,6 +86,11 @@ const StationListPanel = forwardRef(({ stations = [], onStationClick, onNavigate
       const getPremium = s => (s.prices.find(p => p.type === FUEL_TYPE.PREMIUM)?.price ?? Infinity);
       return getPremium(a) - getPremium(b);
     });
+  } else if (sortType === 'lpg') {
+    sortedStations.sort((a, b) => {
+      const getLpg = s => (s.prices.find(p => p.type === FUEL_TYPE.LPG)?.price ?? Infinity);
+      return getLpg(a) - getLpg(b);
+    });
   }
 
   return (
@@ -111,15 +109,17 @@ const StationListPanel = forwardRef(({ stations = [], onStationClick, onNavigate
           <div key={station.id} className="relative group">
             <StationCard
               station={station}
+              isSelected={selectedStationId === station.id}
               onClick={() => onStationClick && onStationClick(station)}
               onNavigate={onNavigate}
               data-station-id={station.id}
             />
-            <div className="absolute top-4 right-4 z-[1]">
+            <div className={`absolute top-4 right-4 z-[1] ${selectedStationId === station.id ? 'opacity-100' : ''}`}>
               <FavoriteButton
                 stationId={station.id}
                 isFavorite={favoriteIds.includes(station.id)}
                 onToggle={handleToggleFavorite}
+                disabled={!isLoggedIn}
               />
             </div>
           </div>

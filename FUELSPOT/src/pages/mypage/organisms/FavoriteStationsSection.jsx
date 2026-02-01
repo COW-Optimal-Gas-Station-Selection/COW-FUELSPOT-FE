@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { addFavorite, getFavorites, removeFavorite } from '../../../api/favoriteService'
-import { STATIONS } from '../../../constants/stations'
+import { getStationDetail } from '../../../api/stationService'
 import FavoriteButton from '../../mainpage/atoms/FavoriteButton'
 import StationCard from '../../mainpage/molecules/StationCard'
+import { FUEL_TYPE } from '../../../components/FuelPriceBox'
 
 function FavoriteStationsSection() {
   const [favoriteStations, setFavoriteStations] = useState([])
@@ -15,10 +16,33 @@ function FavoriteStationsSection() {
   const loadFavorites = async () => {
     try {
       setLoading(true)
-      const data = await getFavorites()
-      const favoriteIds = data.map(f => String(f.stationId))
-      const filtered = STATIONS.filter(s => favoriteIds.includes(String(s.id)))
-      setFavoriteStations(filtered)
+      const data = await getFavorites() // [{ favoriteId, stationId }, ...]
+      
+      const detailPromises = data.map(f => getStationDetail(f.stationId))
+      const rawDetails = await Promise.all(detailPromises)
+      
+      // 백엔드 데이터를 프론트엔드 형식으로 변환 (MainPageLayout과 동일한 로직 적용)
+      const mappedDetails = rawDetails.map(s => ({
+        id: String(s.id),
+        name: s.name,
+        brand: s.brand,
+        address: s.address, 
+        tel: s.tel,
+        isCarWash: s.isCarWash,
+        tradeDate: s.tradeDate,
+        tradeTime: s.tradeTime,
+        distance: '', // 마이페이지에서는 거리 표시 제외 또는 별도 처리
+        lat: parseFloat(s.lat),
+        lng: parseFloat(s.lon),
+        prices: [
+          { type: FUEL_TYPE.GASOLINE, price: s.priceGasoline },
+          { type: FUEL_TYPE.DIESEL, price: s.priceDiesel },
+          { type: FUEL_TYPE.PREMIUM, price: 0 },
+          { type: FUEL_TYPE.LPG, price: s.priceLpg }
+        ].filter(p => p.price && p.price > 0)
+      }));
+      
+      setFavoriteStations(mappedDetails)
     } catch (error) {
       console.error('Failed to load favorites:', error)
     } finally {
@@ -35,10 +59,27 @@ function FavoriteStationsSection() {
         setFavoriteStations(prev => prev.filter(s => s.id !== stationId))
       } else {
         await addFavorite(stationId)
-        const station = STATIONS.find(s => s.id === stationId)
-        if (station) {
-          setFavoriteStations(prev => [...prev, station])
+        const s = await getStationDetail(stationId)
+        const mapped = {
+          id: String(s.id),
+          name: s.name,
+          brand: s.brand,
+          address: s.address, 
+          tel: s.tel,
+          isCarWash: s.isCarWash,
+          tradeDate: s.tradeDate,
+          tradeTime: s.tradeTime,
+          distance: '',
+          lat: parseFloat(s.lat),
+          lng: parseFloat(s.lon),
+          prices: [
+            { type: FUEL_TYPE.GASOLINE, price: s.priceGasoline },
+            { type: FUEL_TYPE.DIESEL, price: s.priceDiesel },
+            { type: FUEL_TYPE.PREMIUM, price: 0 },
+            { type: FUEL_TYPE.LPG, price: s.priceLpg }
+          ].filter(p => p.price && p.price > 0)
         }
+        setFavoriteStations(prev => [...prev, mapped])
       }
     } catch (error) {
       alert('즐겨찾기 처리 중 오류가 발생했습니다.')

@@ -1,11 +1,12 @@
 import { forwardRef, useEffect, useState } from 'react';
+import { addFavorite, getFavorites, removeFavorite } from '../../../api/favoriteService';
 import { FUEL_TYPE } from '../../../components/FuelPriceBox';
 import FavoriteButton from '../atoms/FavoriteButton';
 import StationFilterBox from '../atoms/StationFilterBox';
 import StationCard from '../molecules/StationCard';
 
 
-const getFavoriteIds = () => {
+const getLocalFavoriteIds = () => {
   try {
     return JSON.parse(localStorage.getItem('favoriteStations') || '[]');
   } catch {
@@ -15,26 +16,59 @@ const getFavoriteIds = () => {
 
 const StationListPanel = forwardRef(({ stations = [], onStationClick, onNavigate }, ref) => {
   const [sortType, setSortType] = useState('distance');
-  // ...sortOptions moved to StationFilterBox
   const [favoriteIds, setFavoriteIds] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    setFavoriteIds(getFavoriteIds());
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      setIsLoggedIn(true);
+      loadBackendFavorites();
+    } else {
+      setIsLoggedIn(false);
+      setFavoriteIds(getLocalFavoriteIds());
+    }
   }, []);
+
+  const loadBackendFavorites = async () => {
+    try {
+      const data = await getFavorites();
+      setFavoriteIds(data.map(f => f.stationId));
+    } catch (error) {
+      console.error('Failed to load backend favorites:', error);
+      setFavoriteIds(getLocalFavoriteIds());
+    }
+  };
 
   const handleSortChange = (value) => {
     setSortType(value);
   };
 
-  const handleToggleFavorite = (stationId) => {
-    let next;
-    if (favoriteIds.includes(stationId)) {
-      next = favoriteIds.filter(id => id !== stationId);
+  const handleToggleFavorite = async (stationId) => {
+    if (isLoggedIn) {
+      try {
+        if (favoriteIds.includes(stationId)) {
+          await removeFavorite(stationId);
+          setFavoriteIds(prev => prev.filter(id => id !== stationId));
+        } else {
+          await addFavorite(stationId);
+          setFavoriteIds(prev => [...prev, stationId]);
+        }
+      } catch (error) {
+        alert('즐겨찾기 처리 중 오류가 발생했습니다.');
+      }
     } else {
-      next = [...favoriteIds, stationId];
+      // Guest logic (localStorage)
+      let next;
+      const currentLocal = getLocalFavoriteIds();
+      if (currentLocal.includes(stationId)) {
+        next = currentLocal.filter(id => id !== stationId);
+      } else {
+        next = [...currentLocal, stationId];
+      }
+      setFavoriteIds(next);
+      localStorage.setItem('favoriteStations', JSON.stringify(next));
     }
-    setFavoriteIds(next);
-    localStorage.setItem('favoriteStations', JSON.stringify(next));
   };
 
   let sortedStations = [...stations];

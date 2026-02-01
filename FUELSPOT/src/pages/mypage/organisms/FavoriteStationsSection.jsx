@@ -1,29 +1,56 @@
 import { useEffect, useState } from 'react'
+import { addFavorite, getFavorites, removeFavorite } from '../../../api/favoriteService'
 import { STATIONS } from '../../../constants/stations'
 import FavoriteButton from '../../mainpage/atoms/FavoriteButton'
 import StationCard from '../../mainpage/molecules/StationCard'
 
 function FavoriteStationsSection() {
   const [favoriteStations, setFavoriteStations] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const favoriteIds = JSON.parse(localStorage.getItem('favoriteStations') || '[]')
-    const filtered = STATIONS.filter(s => favoriteIds.includes(s.id))
-    setFavoriteStations(filtered)
+    loadFavorites()
   }, [])
 
-  const handleToggleFavorite = (stationId) => {
-    const currentIds = JSON.parse(localStorage.getItem('favoriteStations') || '[]')
-    let nextIds
-    if (currentIds.includes(stationId)) {
-      nextIds = currentIds.filter(id => id !== stationId)
-    } else {
-      nextIds = [...currentIds, stationId]
+  const loadFavorites = async () => {
+    try {
+      setLoading(true)
+      const data = await getFavorites()
+      const favoriteIds = data.map(f => String(f.stationId))
+      const filtered = STATIONS.filter(s => favoriteIds.includes(String(s.id)))
+      setFavoriteStations(filtered)
+    } catch (error) {
+      console.error('Failed to load favorites:', error)
+    } finally {
+      setLoading(false)
     }
-    localStorage.setItem('favoriteStations', JSON.stringify(nextIds))
-    
-    // UI 업데이트
-    setFavoriteStations(STATIONS.filter(s => nextIds.includes(s.id)))
+  }
+
+  const handleToggleFavorite = async (stationId) => {
+    try {
+      const isCurrentlyFavorite = favoriteStations.some(s => s.id === stationId)
+      
+      if (isCurrentlyFavorite) {
+        await removeFavorite(stationId)
+        setFavoriteStations(prev => prev.filter(s => s.id !== stationId))
+      } else {
+        await addFavorite(stationId)
+        const station = STATIONS.find(s => s.id === stationId)
+        if (station) {
+          setFavoriteStations(prev => [...prev, station])
+        }
+      }
+    } catch (error) {
+      alert('즐겨찾기 처리 중 오류가 발생했습니다.')
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="h-full flex items-center justify-center py-20">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    )
   }
 
   return (

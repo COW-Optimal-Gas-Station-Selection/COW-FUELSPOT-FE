@@ -3,6 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { signup } from '../../api/memberService'
 import Button from '../../components/Button'
 import Modal from '../../components/Modal'
+import {
+  validateConfirmPassword,
+  validateEmail,
+  validateNickname,
+  validatePassword
+} from '../../utils/validation'
 import ConfirmPasswordInputSection from './organisms/ConfirmPasswordInputSection'
 import EmailInputSection from './organisms/EmailInputSection'
 import FuelTypeInputSection from './organisms/FuelTypeInputSection'
@@ -32,29 +38,10 @@ function Signup() {
   const [showErrorModal, setShowErrorModal] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
-  const nicknameRequirements = {
-    isLengthValid: nickname.length >= 2 && nickname.length <= 10
-  }
-
-  const emailRequirements = {
-    isEmailFormat: email.length > 0 && email.includes('@') && email.includes('.')
-  }
-
-  const passwordRequirements = {
-    isLengthValid: password.length >= 8,
-    isComplexValid: password.length > 0 && 
-      /[A-Za-z]/.test(password) && 
-      /\d/.test(password) && 
-      /[@$!%*#?&]/.test(password)
-  }
-
-  const confirmPasswordRequirements = {
-    isMatch: confirmPassword.length > 0 && password === confirmPassword
-  }
-
-  const validateEmail = (email) => {
-    return email.includes('@') && email.includes('.')
-  }
+  const nicknameRequirements = validateNickname(nickname)
+  const emailRequirements = validateEmail(email)
+  const passwordRequirements = validatePassword(password)
+  const confirmPasswordRequirements = validateConfirmPassword(password, confirmPassword)
 
   const handleSignup = () => {
     setNicknameError('')

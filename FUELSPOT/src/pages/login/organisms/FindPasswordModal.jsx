@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { resetPassword, sendVerificationCode, verifyCode } from '../api/memberService'
-import EmailIcon from '../pages/login/atoms/EmailIcon'
-import ConfirmPasswordInputSection from '../pages/signup/organisms/ConfirmPasswordInputSection'
-import PasswordInputSection from '../pages/signup/organisms/PasswordInputSection'
-import { validateConfirmPassword, validatePassword } from '../utils/validation'
-import Button from './Button'
-import Input from './Input'
+import { resetPassword, sendVerificationCode, verifyCode } from '../../../api/memberService'
+import Button from '../../../components/Button'
+import Input from '../../../components/Input'
+import { validateConfirmPassword, validatePassword } from '../../../utils/validation'
+import ConfirmPasswordInputSection from '../../signup/organisms/ConfirmPasswordInputSection'
+import PasswordInputSection from '../../signup/organisms/PasswordInputSection'
+import EmailIcon from '../atoms/EmailIcon'
 
 function FindPasswordModal({ isOpen, onClose }) {
   const [step, setStep] = useState('email') // email, verify, reset

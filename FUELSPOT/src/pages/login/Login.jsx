@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { login } from '../../api/memberService'
 import Button from '../../components/Button'
-import FindPasswordModal from '../../components/FindPasswordModal'
 import Modal from '../../components/Modal'
 import GasFillingGame from './components/GasFillingGame'
 import EmailInputSection from './organisms/EmailInputSection'
+import FindPasswordModal from './organisms/FindPasswordModal'
 import LoginFooter from './organisms/LoginFooter'
 import LoginHeader from './organisms/LoginHeader'
 import PasswordInputSection from './organisms/PasswordInputSection'
@@ -52,14 +52,14 @@ function Login() {
     login(loginData)
       .then((data) => {
         if (data.isSuccess) {
-          // 토큰 저장
+
           localStorage.setItem('accessToken', data.tokenDto.accessToken)
           localStorage.setItem('refreshToken', data.tokenDto.refreshToken)
           
-          // 사용자 정보 저장 (MainPageLayout 호환성을 위해 user 객체로도 저장)
+
           const user = {
             id: data.memberId,
-            nickname: data.nickname, // UserMenu에서 nickname을 사용함
+            nickname: data.nickname,
             fuelType: data.fuelType,
             radius: data.radius
           }

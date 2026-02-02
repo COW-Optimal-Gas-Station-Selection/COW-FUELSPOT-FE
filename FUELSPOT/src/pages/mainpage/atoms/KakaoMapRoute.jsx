@@ -12,20 +12,35 @@ const KakaoMapRoute = ({ mapInstance, from, to }) => {
         const origin = `${from.getLng()},${from.getLat()}`;
         const destination = `${to.getLng()},${to.getLat()}`;
         const data = await getDirections(origin, destination);
+        console.log('Route data received:', data);
 
         const newPath = [];
-        data.sections.forEach(section => {
-          section.roads.forEach(road => {
-            const vertexes = road.vertexes;
-            for (let i = 0; i < vertexes.length; i += 2) {
-              newPath.push(new window.kakao.maps.LatLng(vertexes[i + 1], vertexes[i]));
-            }
-          });
-        });
-        setPath(newPath);
+        if (data && data.routes && Array.isArray(data.routes) && data.routes.length > 0) {
+          const route = data.routes[0];
+          if (route.sections && Array.isArray(route.sections)) {
+            route.sections.forEach(section => {
+              if (section.roads && Array.isArray(section.roads)) {
+                section.roads.forEach(road => {
+                  const vertexes = road.vertexes;
+                  if (vertexes && Array.isArray(vertexes)) {
+                    for (let i = 0; i < vertexes.length; i += 2) {
+                      newPath.push(new window.kakao.maps.LatLng(vertexes[i + 1], vertexes[i]));
+                    }
+                  }
+                });
+              }
+            });
+          }
+        }
+        
+        if (newPath.length > 0) {
+          setPath(newPath);
+        } else {
+          console.warn('No path found in directions response, using straight line');
+          setPath([from, to]);
+        }
       } catch (error) {
         console.error('Failed to fetch route:', error);
-        // Fallback to straight line
         setPath([from, to]);
       }
     };

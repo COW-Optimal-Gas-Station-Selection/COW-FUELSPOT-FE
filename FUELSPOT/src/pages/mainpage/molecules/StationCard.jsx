@@ -14,7 +14,7 @@ const StationCard = ({ station, onClick, onNavigate, isFavorite, onToggleFavorit
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
           <GasBrandIconBox brand={station.brand} />
-          <h3 className="text-[#101828] text-base font-semibold">{station.name}</h3>
+          <h3 className={`text-base font-semibold ${isSelected ? 'text-blue-900' : 'text-[#101828]'}`}>{station.name}</h3>
         </div>
         <div className="flex items-center gap-1 text-[#4a5565] text-sm mt-1">
           <PointIcon className="shrink-0 w-4 h-4" />
@@ -41,14 +41,20 @@ const StationCard = ({ station, onClick, onNavigate, isFavorite, onToggleFavorit
           <div key={idx} className="flex-1">
             <FuelPriceBox fuelType={p.type} price={p.price} />
           </div>
-        ))}
+          {station.tradeDate && (
+            <div className="text-[11px] text-gray-400 text-right pt-1">
+              기준: {station.tradeDate} {station.tradeTime}
+            </div>
+          )}
+        </div>
       </div>
+
       <div className="flex items-center justify-between mt-1 gap-2">
         <div className="flex flex-col items-start gap-1">
           <div className="text-[#155dfc] text-sm font-medium">{station.distance}</div>
         </div>
         <button
-          className="px-3 py-1 rounded bg-[#155dfc] text-white text-xs font-semibold hover:bg-[#0d3fa6] transition-colors w-fit"
+          className="px-3 py-1 rounded bg-[#155dfc] text-white text-xs font-semibold hover:bg-[#0d3fa6] transition-colors w-fit shadow-sm"
           onClick={e => {
             e.stopPropagation();
             if (onNavigate) onNavigate(station);

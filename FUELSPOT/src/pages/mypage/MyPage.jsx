@@ -10,6 +10,7 @@ import ErrorModal from './molecules/ErrorModal'
 import SuccessModal from './molecules/SuccessModal'
 import FavoriteStationsSection from './organisms/FavoriteStationsSection'
 import MyPageNavBar from './organisms/MyPageNavBar'
+import PasswordChangeModal from './organisms/PasswordChangeModal'
 
 function MyPage() {
   const navigate = useNavigate()
@@ -25,13 +26,18 @@ function MyPage() {
   const [fuelType, setFuelType] = useState(user?.fuelType || 'GASOLINE')
   const [radius, setRadius] = useState(user?.radius || 3)
   
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  
   const [nicknameError, setNicknameError] = useState('')
   const [fuelTypeError, setFuelTypeError] = useState('')
   const [radiusError, setRadiusError] = useState('')
+  const [passwordError, setPasswordError] = useState('')
   
-  const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [showErrorModal, setShowErrorModal] = useState(false)
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false)
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
@@ -51,9 +57,9 @@ function MyPage() {
       })
   }, [navigate])
 
-  const nicknameRequirements = {
-    isLengthValid: nickname.length >= 2 && nickname.length <= 10
-  }
+  const nicknameRequirements = validateNickname(nickname)
+  const newPasswordRequirements = validatePassword(newPassword)
+  const confirmPasswordRequirements = validateConfirmPassword(newPassword, confirmPassword)
 
   const handleUpdate = async () => {
     setNicknameError('')
@@ -84,18 +90,58 @@ function MyPage() {
       setErrorMessage(error.message || '정보 수정 중 오류가 발생했습니다.')
       setShowErrorModal(true)
     }
+
+    updateMyInfo(updateData)
+      .then((data) => {
+        setUser(data)
+        localStorage.setItem('user', JSON.stringify(data))
+        alert('회원 정보가 성공적으로 수정되었습니다.')
+      })
+      .catch((error) => {
+        setErrorMessage(error.message || '정보 수정 중 오류가 발생했습니다.')
+        setShowErrorModal(true)
+      })
   }
 
-  const handleSuccessModalClose = () => {
-    setShowSuccessModal(false)
-    navigate('/')
+  const handleChangePassword = () => {
+    setPasswordError('')
+
+    if (!currentPassword) {
+      setPasswordError('현재 비밀번호를 입력해주세요')
+      return
+    }
+    
+    if (!newPasswordRequirements.isLengthValid || !newPasswordRequirements.isComplexValid) {
+      setPasswordError('비밀번호는 8자 이상이며 영문, 숫자, 특수문자를 포함해야 합니다')
+      return
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('새 비밀번호가 일치하지 않습니다')
+      return
+    }
+
+    changePassword({ currentPassword, newPassword })
+      .then(() => {
+        setShowPasswordModal(false)
+        setCurrentPassword('')
+        setNewPassword('')
+        setConfirmPassword('')
+        alert('비밀번호가 성공적으로 변경되었습니다.')
+      })
+      .catch((error) => {
+        setPasswordError(error.message)
+      })
   }
 
   const handleDeleteAccount = () => {
     deleteAccount()
+    deleteAccount()
       .then(() => {
         localStorage.removeItem('user')
         localStorage.removeItem('accessToken')
+        localStorage.removeItem('refreshToken')
+        alert('회원 탈퇴가 완료되었습니다. 그동안 이용해주셔서 감사합니다.')
         navigate('/login')
       })
       .catch((error) => {

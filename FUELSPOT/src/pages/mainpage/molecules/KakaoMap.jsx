@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+import KakaoMapCurrentLocationMarker from '../atoms/KakaoMapCurrentLocationMarker';
 import KakaoMapMarker from '../atoms/KakaoMapMarker';
 import KakaoMapMarkerLabel from '../atoms/KakaoMapMarkerLabel';
 import KakaoMapRoute from '../atoms/KakaoMapRoute';
-import KakaoMapCurrentLocationMarker from '../atoms/KakaoMapCurrentLocationMarker';
 
 const KAKAO_MAP_KEY = import.meta.env.VITE_KAKAO_MAP_KEY;
 
@@ -36,9 +36,16 @@ const KakaoMap = ({
           };
           mapInstance.current = new window.kakao.maps.Map(container, options);
           setMapReady(true);
+          // 초기 렌더링 시 크기 조정이 필요할 수 있음
+          setTimeout(() => {
+            if (mapInstance.current) {
+              mapInstance.current.relayout();
+            }
+          }, 100);
         } else {
           mapInstance.current.setCenter(new window.kakao.maps.LatLng(lat, lng));
           mapInstance.current.setLevel(level);
+          mapInstance.current.relayout();
           setMapReady(true);
         }
       });
@@ -91,7 +98,6 @@ const KakaoMap = ({
 
   return (
     <div
-      key={`${lat}-${lng}-${level}-${stations.length}`}
       ref={mapRef}
       style={{ width, height }}
       {...props}

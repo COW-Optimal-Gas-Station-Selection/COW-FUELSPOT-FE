@@ -72,3 +72,47 @@ export const getDirections = async (origin, destination) => {
         throw error;
     }
 };
+
+/**
+ * 좌표를 주소로 변환
+ * @param {number} lat 
+ * @param {number} lon 
+ */
+export const getAddressFromCoords = async (lat, lon) => {
+    try {
+        const response = await api.get('/map/address', {
+            params: { x: lon, y: lat }
+        });
+        return response;
+    } catch (error) {
+        console.error('Failed to get address from coords:', error);
+        throw error;
+    }
+};
+
+/**
+ * 전국 평균 유가 조회
+ */
+export const getAveragePrices = async () => {
+    try {
+        const response = await api.get('/gas-stations/average');
+        return response;
+    } catch (error) {
+        console.error('Failed to fetch average prices:', error);
+        throw error;
+    }
+};
+
+/**
+ * 시도별 평균 유가 조회
+ * @param {string} sido "SEOUL", "GYEONGGI", etc.
+ */
+export const getSidoAveragePrices = async (sido) => {
+    try {
+        const response = await api.get('/gas-stations/average/sido', { params: { sido } });
+        return response;
+    } catch (error) {
+        console.error('Failed to fetch sido average prices:', error);
+        throw error;
+    }
+};

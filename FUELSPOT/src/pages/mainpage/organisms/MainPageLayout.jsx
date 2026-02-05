@@ -1,7 +1,8 @@
 
 import { useEffect, useRef, useState } from 'react';
-import { getNearbyStations, searchPlaces } from '../../../api/stationService';
+import { getAddressFromCoords, getNearbyStations, searchPlaces } from '../../../api/stationService';
 import { FUEL_TYPE } from '../../../components/FuelPriceBox';
+import AveragePricePanel from './AveragePricePanel';
 import Header from './Header';
 import MapViewPanel from './MapViewPanel';
 import StationListPanel from './StationListPanel';
@@ -19,6 +20,38 @@ const MainPageLayout = () => {
   const [selectedFuel, setSelectedFuel] = useState('gasoline');
   const [sortType, setSortType] = useState('distance');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [detectedSido, setDetectedSido] = useState(null);
+
+  useEffect(() => {
+    const fetchAddress = async () => {
+      if (!currentLocation) return;
+      try {
+        const address = await getAddressFromCoords(currentLocation.lat, currentLocation.lng);
+        if (address) {
+          if (address.includes('서울')) setDetectedSido('SEOUL');
+          else if (address.includes('경기')) setDetectedSido('GYEONGGI');
+          else if (address.includes('인천')) setDetectedSido('GYEONGGI');
+          else if (address.includes('강원')) setDetectedSido('GANGWON');
+          else if (address.includes('충북') || address.includes('충청북도')) setDetectedSido('CHUNGBUK');
+          else if (address.includes('충남') || address.includes('충청남도')) setDetectedSido('CHUNGNAM');
+          else if (address.includes('세종')) setDetectedSido('CHUNGNAM');
+          else if (address.includes('대전')) setDetectedSido('CHUNGNAM');
+          else if (address.includes('전북') || address.includes('전라북도')) setDetectedSido('JEONBUK');
+          else if (address.includes('전남') || address.includes('전라남도')) setDetectedSido('JEONNAM');
+          else if (address.includes('광주')) setDetectedSido('JEONNAM');
+          else if (address.includes('경북') || address.includes('경상북도')) setDetectedSido('GYEONGBUK');
+          else if (address.includes('대구')) setDetectedSido('GYEONGBUK');
+          else if (address.includes('경남') || address.includes('경상남도')) setDetectedSido('GYEONGNAM');
+          else if (address.includes('울산')) setDetectedSido('GYEONGNAM');
+          else if (address.includes('부산')) setDetectedSido('BUSAN');
+          else if (address.includes('제주')) setDetectedSido('JEJU');
+        }
+      } catch (error) {
+        console.error('Failed to detect Sido from location:', error);
+      }
+    };
+    fetchAddress();
+  }, [currentLocation]);
 
   useEffect(() => {
     const userStr = localStorage.getItem('user');
@@ -202,27 +235,32 @@ const MainPageLayout = () => {
   return (
     <div className="flex flex-col h-screen bg-[#f9fafb] overflow-hidden">
       <Header user={user} />
-      <main className="flex-1 max-w-[1248px] mx-auto w-full p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 relative min-h-0">
-        <MapViewPanel 
-          stations={stations} 
-          selectedStation={selectedStation} 
-          onMarkerClick={handleMarkerClick} 
-          routeTo={routeTo} 
-          currentLocation={currentLocation}
-          onLocationClick={handleLocationClick}
-          searchKeyword={searchKeyword}
-          onSearchChange={handleSearchChange}
-          suggestions={suggestions}
-          onSuggestionClick={handleSuggestionClick}
-        />
-        <StationListPanel 
-          stations={stations} 
-          selectedStationId={selectedStation?.id}
-          onStationClick={handleStationClick} 
-          onNavigate={handleNavigate} 
-          ref={listPanelRef} 
-        />
-      </main>
+      <div className="flex-1 flex flex-row w-full max-w-[1550px] mx-auto min-h-0 overflow-hidden">
+        <aside className="hidden xl:block w-[280px] p-6 pr-0 overflow-y-auto">
+          <AveragePricePanel initialSido={detectedSido} />
+        </aside>
+        <main className="flex-1 p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 relative min-h-0">
+          <MapViewPanel 
+            stations={stations} 
+            selectedStation={selectedStation} 
+            onMarkerClick={handleMarkerClick} 
+            routeTo={routeTo} 
+            currentLocation={currentLocation}
+            onLocationClick={handleLocationClick}
+            searchKeyword={searchKeyword}
+            onSearchChange={handleSearchChange}
+            suggestions={suggestions}
+            onSuggestionClick={handleSuggestionClick}
+          />
+          <StationListPanel 
+            stations={stations} 
+            selectedStationId={selectedStation?.id}
+            onStationClick={handleStationClick} 
+            onNavigate={handleNavigate} 
+            ref={listPanelRef} 
+          />
+        </main>
+      </div>
     </div>
   );
 };

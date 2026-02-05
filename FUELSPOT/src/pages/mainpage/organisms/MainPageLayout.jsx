@@ -18,7 +18,7 @@ const MainPageLayout = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [selectedFuel, setSelectedFuel] = useState('gasoline');
-  const [sortType, setSortType] = useState('distance');
+  const [sortType, setSortType] = useState('optimal');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [detectedSido, setDetectedSido] = useState(null);
 
@@ -91,8 +91,7 @@ const MainPageLayout = () => {
         const params = {
           lon: currentLocation.lng,
           lat: currentLocation.lat,
-          radius: radius,
-          sort: 'DISTANCE'
+          radius: radius
         };
         
         const data = await getNearbyStations(params);

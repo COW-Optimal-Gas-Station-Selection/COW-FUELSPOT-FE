@@ -1,6 +1,7 @@
 import { Listbox, Transition } from '@headlessui/react';
 
 const sortOptions = [
+  { value: 'optimal', label: '최적순', icon: <span className="text-blue-600"></span> },
   { value: 'distance', label: '거리순', icon: <span className="text-pink-500"></span> },
   { value: 'gasoline', label: '가격순(휘발유)', icon: <span className="text-red-500"></span> },
   { value: 'diesel', label: '가격순(경유)', icon: <span className="text-blue-500"></span> },

@@ -16,7 +16,7 @@ const getLocalFavoriteIds = () => {
 };
 
 const StationListPanel = forwardRef(({ stations = [], selectedStationId, onStationClick, onNavigate }, ref) => {
-  const [sortType, setSortType] = useState('distance');
+  const [sortType, setSortType] = useState('optimal');
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 

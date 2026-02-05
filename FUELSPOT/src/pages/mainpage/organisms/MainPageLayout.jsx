@@ -78,10 +78,10 @@ const MainPageLayout = () => {
           lat: parseFloat(s.lat),
           lng: parseFloat(s.lon),
           prices: [
-            { type: FUEL_TYPE.GASOLINE, price: s.priceGasoline },
-            { type: FUEL_TYPE.DIESEL, price: s.priceDiesel },
-            { type: FUEL_TYPE.PREMIUM, price: 0 }, // Backend NearbyResponse doesn't have premium yet
-            { type: FUEL_TYPE.LPG, price: s.priceLpg }
+            { type: FUEL_TYPE.GASOLINE, price: s.prices?.GASOLINE || 0 },
+            { type: FUEL_TYPE.DIESEL, price: s.prices?.DIESEL || 0 },
+            { type: FUEL_TYPE.PREMIUM, price: s.prices?.PREMIUM_GASOLINE || 0 },
+            { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 }
           ].filter(p => p.price > 0)
         }));
         

@@ -7,7 +7,7 @@ import api from './axios';
 export const getNearbyStations = async (params) => {
     try {
         const response = await api.get('/gas-stations/nearby', { params });
-        return response.data;
+        return response;
     } catch (error) {
         console.error('Failed to fetch nearby stations:', error);
         throw error;
@@ -21,7 +21,7 @@ export const getNearbyStations = async (params) => {
 export const getFilteredStations = async (params) => {
     try {
         const response = await api.get('/gas-stations/filter', { params });
-        return response.data;
+        return response;
     } catch (error) {
         console.error('Failed to fetch filtered stations:', error);
         throw error;
@@ -35,7 +35,7 @@ export const getFilteredStations = async (params) => {
 export const getStationDetail = async (stationId) => {
     try {
         const response = await api.get(`/gas-stations/${stationId}`);
-        return response.data;
+        return response;
     } catch (error) {
         console.error('Failed to fetch station detail:', error);
         throw error;
@@ -49,7 +49,7 @@ export const getStationDetail = async (stationId) => {
 export const searchPlaces = async (keyword) => {
     try {
         const response = await api.get('/map/search', { params: { keyword } });
-        return response.data;
+        return response;
     } catch (error) {
         console.error('Failed to search places:', error);
         throw error;
@@ -66,7 +66,7 @@ export const getDirections = async (origin, destination) => {
         const response = await api.get('/map/direction', {
             params: { origin, destination }
         });
-        return response.data;
+        return response;
     } catch (error) {
         console.error('Failed to fetch directions:', error);
         throw error;

@@ -4,10 +4,10 @@ import { signup } from '../../api/memberService'
 import Button from '../../components/Button'
 import Modal from '../../components/Modal'
 import {
-  validateConfirmPassword,
-  validateEmail,
-  validateNickname,
-  validatePassword
+    validateConfirmPassword,
+    validateEmail,
+    validateNickname,
+    validatePassword
 } from '../../utils/validation'
 import ConfirmPasswordInputSection from './organisms/ConfirmPasswordInputSection'
 import EmailInputSection from './organisms/EmailInputSection'
@@ -106,6 +106,7 @@ function Signup() {
     const signupData = {
       email,
       password,
+      checkPassword: confirmPassword,
       nickname,
       fuelType,
       radius: parseInt(radius)
@@ -117,7 +118,7 @@ function Signup() {
       })
       .catch((error) => {
         console.error('Signup error:', error)
-        setErrorMessage(error.message)
+        setErrorMessage(error.message || '회원가입 중 오류가 발생했습니다.')
         setShowErrorModal(true)
       })
   }

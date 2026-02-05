@@ -50,29 +50,25 @@ function Login() {
     }
 
     login(loginData)
-      .then((data) => {
-        if (data.isSuccess) {
-
-          localStorage.setItem('accessToken', data.tokenDto.accessToken)
-          localStorage.setItem('refreshToken', data.tokenDto.refreshToken)
+      .then((result) => {
+        // Interceptor now returns result directly on success
+        if (result) {
+          localStorage.setItem('accessToken', result.tokenDto.accessToken)
+          localStorage.setItem('refreshToken', result.tokenDto.refreshToken)
           
-
           const user = {
-            id: data.memberId,
-            nickname: data.nickname,
-            fuelType: data.fuelType,
-            radius: data.radius
+            id: result.memberId,
+            nickname: result.nickname,
+            fuelType: result.fuelType,
+            radius: result.radius
           }
           localStorage.setItem('user', JSON.stringify(user))
           setShowSuccessModal(true)
-        } else {
-          setErrorMessage(data.message || '아이디 또는 비밀번호가 올바르지 않습니다.')
-          setShowErrorModal(true)
         }
       })
       .catch((error) => {
         console.error('Login error:', error)
-        setErrorMessage(error.message)
+        setErrorMessage(error.message || '아이디 또는 비밀번호가 올바르지 않습니다.')
         setShowErrorModal(true)
       })
   }

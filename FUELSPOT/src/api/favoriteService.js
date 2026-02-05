@@ -4,7 +4,7 @@ import api from './axios';
 export const getFavorites = async () => {
     try {
         const response = await api.get('/favorites');
-        return response.data;
+        return response;
     } catch (error) {
         console.error('Failed to fetch favorites:', error);
         throw error;
@@ -15,7 +15,7 @@ export const getFavorites = async () => {
 export const addFavorite = async (stationId) => {
     try {
         const response = await api.post('/favorites', { stationId });
-        return response.data;
+        return response;
     } catch (error) {
         console.error('Failed to add favorite:', error);
         throw error;

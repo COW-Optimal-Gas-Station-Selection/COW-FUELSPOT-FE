@@ -21,6 +21,9 @@ const MainPageLayout = () => {
   const [sortType, setSortType] = useState('optimal');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [detectedSido, setDetectedSido] = useState(null);
+  const [priceDrawerOpen, setPriceDrawerOpen] = useState(false);
+  const drawerRef = useRef(null);
+  const touchStartX = useRef(0);
 
   useEffect(() => {
     const fetchAddress = async () => {
@@ -201,6 +204,24 @@ const MainPageLayout = () => {
     setSelectedStation(station);
   };
 
+  const handleDrawerTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleDrawerTouchMove = (e) => {
+    const x = e.touches[0].clientX;
+    const delta = x - touchStartX.current;
+    if (priceDrawerOpen && delta < -50) setPriceDrawerOpen(false);
+    else if (!priceDrawerOpen && delta > 40) setPriceDrawerOpen(true);
+  };
+  const handleDrawerTouchEnd = () => {};
+  const handleEdgeDragStart = (e) => {
+    touchStartX.current = e.touches ? e.touches[0].clientX : e.clientX;
+  };
+  const handleEdgeDragMove = (e) => {
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    if (x - touchStartX.current > 50) setPriceDrawerOpen(true);
+  };
+
   // 길찾기 버튼 클릭 시
   const handleNavigate = (station) => {
     setRouteTo(station);
@@ -234,8 +255,52 @@ const MainPageLayout = () => {
   return (
     <div className="flex flex-col h-screen bg-[#f9fafb] overflow-hidden">
       <Header user={user} />
+      {/* 모바일: 유가 패널 열기/닫기 탭 - 항상 창 바깥(닫힐 땐 왼쪽, 열릴 땐 드로어 오른쪽) */}
+      <div
+        className="xl:hidden fixed top-1/2 -translate-y-1/2 z-[60] flex items-center transition-[left] duration-300 ease-out"
+        style={{ left: priceDrawerOpen ? 'min(280px, 85vw)' : 0 }}
+        onTouchStart={handleEdgeDragStart}
+        onTouchMove={handleEdgeDragMove}
+      >
+        <button
+          type="button"
+          onClick={() => setPriceDrawerOpen((prev) => !prev)}
+          className={`flex items-center justify-center w-12 h-28 md:h-32 bg-white border border-gray-200 shadow-md hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer ${priceDrawerOpen ? 'rounded-r-xl border-l-0' : 'rounded-l-none rounded-r-2xl border-l-0'}`}
+          aria-label={priceDrawerOpen ? '유가 정보 닫기' : '유가 정보 열기'}
+        >
+          <svg className={`w-6 h-6 text-gray-600 transition-transform ${priceDrawerOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+      {/* 모바일: 유가 드로어 오버레이 */}
+      {priceDrawerOpen && (
+        <div
+          className="xl:hidden fixed inset-0 bg-black/40 z-40 transition-opacity"
+          onClick={() => setPriceDrawerOpen(false)}
+          onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+          onTouchEnd={(e) => { if (e.changedTouches[0].clientX < touchStartX.current - 50) setPriceDrawerOpen(false); }}
+          aria-hidden
+        />
+      )}
+      {/* 모바일: 유가 드로어 패널 */}
+      <aside
+        ref={drawerRef}
+        className="xl:hidden fixed left-0 top-0 bottom-0 w-[min(280px,85vw)] bg-white shadow-xl z-50 flex flex-col transition-transform duration-300 ease-out"
+        style={{ transform: priceDrawerOpen ? 'translateX(0)' : 'translateX(-100%)' }}
+        onTouchStart={handleDrawerTouchStart}
+        onTouchMove={handleDrawerTouchMove}
+        onTouchEnd={handleDrawerTouchEnd}
+      >
+        <div className="p-4 border-b border-gray-100 shrink-0">
+          <h2 className="text-lg font-bold text-gray-800">평균 유가</h2>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4">
+          <AveragePricePanel initialSido={detectedSido} />
+        </div>
+      </aside>
       <div className="flex-1 flex flex-row w-full max-w-[1550px] mx-auto min-h-0 overflow-y-auto overflow-x-hidden lg:overflow-hidden">
-        <aside className="hidden xl:block w-[280px] p-6 pr-0 overflow-y-auto flex-shrink-0">
+        <aside className="hidden xl:block w-[280px] p-6 pr-0 overflow-y-auto shrink-0">
           <AveragePricePanel initialSido={detectedSido} />
         </aside>
         <main className="flex-1 p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 relative min-h-0 overflow-visible">

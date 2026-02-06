@@ -9,31 +9,11 @@ export enum FUEL_TYPE {
 
 type FuelType = FUEL_TYPE.GASOLINE | FUEL_TYPE.DIESEL | FUEL_TYPE.PREMIUM | FUEL_TYPE.LPG;
 
-const FUEL_STYLE: Record<FuelType, { bg: string; label: string; price: string; border: string }> = {
-  [FUEL_TYPE.GASOLINE]: {
-    bg: 'bg-[#fefce8]',
-    border: 'border-[#fef08a]',
-    label: 'text-[#71717a]',
-    price: 'text-[#a65f00]',
-  },
-  [FUEL_TYPE.DIESEL]: {
-    bg: 'bg-[#f0fdf4]',
-    border: 'border-[#bbf7d0]',
-    label: 'text-[#71717a]',
-    price: 'text-[#008236]',
-  },
-  [FUEL_TYPE.PREMIUM]: {
-    bg: 'bg-[#faf5ff]',
-    border: 'border-[#f3e8ff]',
-    label: 'text-[#71717a]',
-    price: 'text-[#8200db]',
-  },
-  [FUEL_TYPE.LPG]: {
-    bg: 'bg-[#f0f9ff]',
-    border: 'border-[#bae6fd]',
-    label: 'text-[#71717a]',
-    price: 'text-[#0369a1]',
-  },
+const FUEL_STYLE: Record<FuelType, { accent: string }> = {
+  [FUEL_TYPE.GASOLINE]: { accent: 'border-l-blue-400' },
+  [FUEL_TYPE.DIESEL]: { accent: 'border-l-cyan-500' },
+  [FUEL_TYPE.PREMIUM]: { accent: 'border-l-indigo-400' },
+  [FUEL_TYPE.LPG]: { accent: 'border-l-slate-400' },
 };
 
 interface FuelPriceBoxProps {
@@ -44,15 +24,15 @@ interface FuelPriceBoxProps {
 const FuelPriceBox: React.FC<FuelPriceBoxProps> = ({ fuelType, price }) => {
   const style = FUEL_STYLE[fuelType] || FUEL_STYLE[FUEL_TYPE.GASOLINE];
   return (
-    <div className={`${style.bg} ${style.border} border rounded-lg p-3 flex flex-col items-start gap-1 transition-all hover:shadow-md cursor-default`}>
-      <span className={`${style.label} text-[11px] font-medium uppercase tracking-tight`}>
+    <div className={`bg-white border border-gray-100 border-l-4 ${style.accent} rounded-lg p-3 flex flex-col items-start gap-1 transition-all hover:shadow-sm hover:border-gray-200 cursor-default shadow-sm`}>
+      <span className="text-gray-500 text-[11px] font-medium uppercase tracking-tight">
         {fuelType}
       </span>
       <div className="flex items-baseline gap-0.5">
-        <span className={`${style.price} font-bold text-lg leading-none`}>
+        <span className="text-gray-900 font-bold text-lg leading-none tracking-tight">
           {price.toLocaleString()}
         </span>
-        <span className={`${style.label} text-xs font-normal`}>원</span>
+        <span className="text-gray-500 text-xs font-normal">원</span>
       </div>
     </div>
   );

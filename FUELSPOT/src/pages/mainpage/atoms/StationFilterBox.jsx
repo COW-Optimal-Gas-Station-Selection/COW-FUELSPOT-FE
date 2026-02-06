@@ -29,7 +29,7 @@ export default function StationFilterBox({ sortType, onSortChange }) {
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 translate-y-[-10px]"
           >
-            <Listbox.Options className="absolute left-0 mt-1.5 w-full bg-white rounded-lg shadow-xl z-50 overflow-auto max-h-60 p-1.5">
+            <Listbox.Options className="absolute left-0 w-full bg-white rounded-lg shadow-xl z-[100] overflow-auto max-h-[45vh] sm:max-h-60 p-1.5 bottom-full mb-1.5 sm:bottom-auto sm:mb-0 sm:top-full sm:mt-1.5">
               {sortOptions.map(opt => (
                 <Listbox.Option
                   key={opt.value}

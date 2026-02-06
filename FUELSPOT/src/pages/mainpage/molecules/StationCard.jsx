@@ -19,12 +19,17 @@ const StationCard = ({ station, isSelected, onClick, onNavigate, ...props }) => 
   const standardText = formatPriceStandard(station.tradeDate, station.tradeTime);
   return (
     <div 
-      className={`border-b border-[#f3f4f6] p-4 flex flex-col gap-3 transition-all cursor-pointer ${isSelected ? 'bg-blue-50/50 ring-1 ring-blue-100' : 'hover:bg-gray-50'}`} 
-      onClick={onClick} 
+      className={`border-b border-[#f3f4f6] p-4 flex flex-col gap-3 transition-all ${isSelected ? 'bg-blue-50/50 ring-1 ring-blue-100' : ''}`} 
       {...props}
     >
       <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2">
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={(e) => { e.stopPropagation(); onClick?.(); }}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(); } }}
+          className="flex items-center gap-2 cursor-pointer w-fit transition-transform duration-200 hover:-translate-y-0.5"
+        >
           <GasBrandIconBox brand={station.brand} />
           <h3 className={`text-base font-semibold ${isSelected ? 'text-blue-900' : 'text-[#101828]'}`}>{station.name}</h3>
         </div>
@@ -68,15 +73,24 @@ const StationCard = ({ station, isSelected, onClick, onNavigate, ...props }) => 
 
       <div className="flex items-center justify-between mt-1 gap-2">
         <div className="text-[#155dfc] text-sm font-medium">{station.distance}</div>
-        <button
-          className="px-4 py-2 rounded-md bg-[#155dfc] text-white text-sm font-semibold hover:bg-[#0d3fa6] transition-colors w-fit shadow-sm"
+        <span
+          role="button"
+          tabIndex={0}
+          className="text-blue-900 font-bold text-sm cursor-pointer transition-transform duration-200 hover:-translate-y-0.5"
           onClick={e => {
             e.stopPropagation();
             if (onNavigate) onNavigate(station);
           }}
+          onKeyDown={e => {
+            if ((e.key === 'Enter' || e.key === ' ') && onNavigate) {
+              e.preventDefault();
+              e.stopPropagation();
+              onNavigate(station);
+            }
+          }}
         >
           길찾기
-        </button>
+        </span>
       </div>
     </div>
   );

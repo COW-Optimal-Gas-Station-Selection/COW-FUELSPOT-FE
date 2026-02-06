@@ -1,17 +1,36 @@
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { logout } from '../api/memberService'
-import Button from './Button'
+
+const linkClass = 'text-blue-900 font-bold text-lg cursor-pointer transition-transform duration-200 hover:-translate-y-0.5';
 
 export default function UserMenu({ user }) {
   const navigate = useNavigate()
-  const location = useLocation()
 
   if (!user) {
     return (
-      <Button className="ml-2 bg-blue-600 hover:bg-blue-700" onClick={() => navigate('/login')}>
+      <span
+        role="button"
+        tabIndex={0}
+        onClick={() => navigate('/login')}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/login'); } }}
+        className={`ml-2 ${linkClass}`}
+      >
         로그인
-      </Button>
+      </span>
     )
+  }
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+    } catch (error) {
+      console.error('Logout failed:', error)
+    } finally {
+      localStorage.removeItem('user')
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+      window.location.reload()
+    }
   }
 
   return (
@@ -29,23 +48,15 @@ export default function UserMenu({ user }) {
           {(user.nickname || user.name)}님
         </span>
       </div>
-      <Button 
-        className="h-9 px-3 text-xs font-bold bg-black text-white hover:bg-gray-800" 
-        onClick={async () => {
-          try {
-            await logout()
-          } catch (error) {
-            console.error('Logout failed:', error)
-          } finally {
-            localStorage.removeItem('user')
-            localStorage.removeItem('accessToken')
-            localStorage.removeItem('refreshToken')
-            window.location.reload()
-          }
-        }}
+      <span
+        role="button"
+        tabIndex={0}
+        onClick={handleLogout}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleLogout(); } }}
+        className={linkClass}
       >
         로그아웃
-      </Button>
+      </span>
     </div>
   )
 }

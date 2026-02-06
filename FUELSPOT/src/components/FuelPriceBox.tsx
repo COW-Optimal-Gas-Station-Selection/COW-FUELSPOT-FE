@@ -24,7 +24,7 @@ interface FuelPriceBoxProps {
 const FuelPriceBox: React.FC<FuelPriceBoxProps> = ({ fuelType, price }) => {
   const style = FUEL_STYLE[fuelType] || FUEL_STYLE[FUEL_TYPE.GASOLINE];
   return (
-    <div className={`bg-white border border-gray-100 border-l-4 ${style.accent} rounded-lg p-3 flex flex-col items-start gap-1 transition-all hover:shadow-sm hover:border-gray-200 cursor-default shadow-sm`}>
+    <div className={`bg-white border border-gray-100 border-l-4 ${style.accent} rounded-lg p-3 flex flex-col items-start gap-1 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm hover:border-gray-200 cursor-default shadow-sm`}>
       <span className="text-gray-500 text-[11px] font-medium uppercase tracking-tight">
         {fuelType}
       </span>

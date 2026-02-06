@@ -234,11 +234,11 @@ const MainPageLayout = () => {
   return (
     <div className="flex flex-col h-screen bg-[#f9fafb] overflow-hidden">
       <Header user={user} />
-      <div className="flex-1 flex flex-row w-full max-w-[1550px] mx-auto min-h-0 overflow-hidden">
-        <aside className="hidden xl:block w-[280px] p-6 pr-0 overflow-y-auto">
+      <div className="flex-1 flex flex-row w-full max-w-[1550px] mx-auto min-h-0 overflow-y-auto overflow-x-hidden lg:overflow-hidden">
+        <aside className="hidden xl:block w-[280px] p-6 pr-0 overflow-y-auto flex-shrink-0">
           <AveragePricePanel initialSido={detectedSido} />
         </aside>
-        <main className="flex-1 p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 relative min-h-0">
+        <main className="flex-1 p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 relative min-h-0 overflow-visible">
           <MapViewPanel 
             stations={stations} 
             selectedStation={selectedStation} 
@@ -251,13 +251,15 @@ const MainPageLayout = () => {
             suggestions={suggestions}
             onSuggestionClick={handleSuggestionClick}
           />
-          <StationListPanel 
-            stations={stations} 
-            selectedStationId={selectedStation?.id}
-            onStationClick={handleStationClick} 
-            onNavigate={handleNavigate} 
-            ref={listPanelRef} 
-          />
+          <div className="min-h-[600px] lg:min-h-0 lg:h-full">
+            <StationListPanel 
+              stations={stations} 
+              selectedStationId={selectedStation?.id}
+              onStationClick={handleStationClick} 
+              onNavigate={handleNavigate} 
+              ref={listPanelRef} 
+            />
+          </div>
         </main>
       </div>
     </div>

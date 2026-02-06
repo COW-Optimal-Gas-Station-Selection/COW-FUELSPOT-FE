@@ -14,8 +14,6 @@ export default function UserMenu({ user }) {
     )
   }
 
-  const isMyPage = location.pathname === '/mypage'
-
   return (
     <div className="flex items-center gap-4 ml-2">
       <div 
@@ -31,26 +29,23 @@ export default function UserMenu({ user }) {
           {(user.nickname || user.name)}님
         </span>
       </div>
-      {isMyPage && (
-        <Button 
-          variant="error-outline"
-          className="h-9 px-3 text-xs font-bold border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200" 
-          onClick={async () => {
-            try {
-              await logout()
-            } catch (error) {
-              console.error('Logout failed:', error)
-            } finally {
-              localStorage.removeItem('user')
-              localStorage.removeItem('accessToken')
-              localStorage.removeItem('refreshToken')
-              window.location.reload()
-            }
-          }}
-        >
-          로그아웃
-        </Button>
-      )}
+      <Button 
+        className="h-9 px-3 text-xs font-bold bg-black text-white hover:bg-gray-800" 
+        onClick={async () => {
+          try {
+            await logout()
+          } catch (error) {
+            console.error('Logout failed:', error)
+          } finally {
+            localStorage.removeItem('user')
+            localStorage.removeItem('accessToken')
+            localStorage.removeItem('refreshToken')
+            window.location.reload()
+          }
+        }}
+      >
+        로그아웃
+      </Button>
     </div>
   )
 }

@@ -17,9 +17,9 @@ const MapViewPanel = ({
   return (
     <div className="bg-white rounded-[10px] shadow-sm flex flex-col border border-gray-100 h-full relative">
       {/* 지도 상단 검색 컨트롤 */}
-      <div className="p-4 border-b border-gray-100 z-20 bg-white rounded-t-[10px]">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 relative">
+      <div className="p-3 md:p-4 border-b border-gray-100 z-20 bg-[#f9fafb] rounded-t-[10px]">
+        <div className="flex flex-row items-center gap-2 min-w-0">
+          <div className="flex-1 min-w-0 relative">
             <SearchInput 
               value={searchKeyword}
               onChange={onSearchChange}
@@ -27,10 +27,8 @@ const MapViewPanel = ({
               onSuggestionClick={onSuggestionClick}
             />
           </div>
-          <div className="flex gap-2">
-            <div className="w-[130px]">
-              <LocationButton onClick={onLocationClick} />
-            </div>
+          <div className="shrink-0 w-[90px] md:w-[130px]">
+            <LocationButton onClick={onLocationClick} />
           </div>
         </div>
       </div>

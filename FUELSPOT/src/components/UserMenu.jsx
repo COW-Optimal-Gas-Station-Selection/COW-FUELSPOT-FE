@@ -1,22 +1,26 @@
 import { useNavigate } from 'react-router-dom'
 import { logout } from '../api/memberService'
 
-const linkClass = 'text-blue-900 font-bold text-lg cursor-pointer transition-transform duration-200 hover:-translate-y-0.5';
+const linkClass = 'text-blue-900 font-bold text-base md:text-xl cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 whitespace-nowrap';
 
 export default function UserMenu({ user }) {
   const navigate = useNavigate()
 
   if (!user) {
     return (
-      <span
-        role="button"
-        tabIndex={0}
-        onClick={() => navigate('/login')}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/login'); } }}
-        className={`ml-2 ${linkClass}`}
-      >
-        로그인
-      </span>
+      <div className="flex items-center gap-10 md:gap-12 ml-2">
+        <span className={`${linkClass} hidden md:inline`}>Q&A</span>
+        <span className={`${linkClass} hidden md:inline`}>유류비계산</span>
+        <span
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate('/login')}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/login'); } }}
+          className={linkClass}
+        >
+          로그인
+        </span>
+      </div>
     )
   }
 
@@ -34,7 +38,9 @@ export default function UserMenu({ user }) {
   }
 
   return (
-    <div className="flex items-center gap-4 ml-2">
+    <div className="flex items-center gap-10 md:gap-12 ml-2">
+      <span className={`${linkClass} hidden md:inline`}>Q&A</span>
+      <span className={`${linkClass} hidden md:inline`}>유류비계산</span>
       <div 
         className="flex items-center gap-3 cursor-pointer group"
         onClick={() => navigate('/mypage')}

@@ -12,11 +12,11 @@ const CrosshairIcon = ({ className = '' }) => (
 
 const LocationButton = ({ className = '', ...props }) => (
   <Button
-    className={`w-full h-[44px] bg-[#1e2939] text-white rounded-[10px] text-base font-medium flex items-center justify-center gap-2 px-3 hover:bg-slate-700 transition-colors ${className}`}
+    className={`w-full h-[40px] md:h-[44px] bg-blue-900 text-white rounded-lg md:rounded-[10px] text-xs md:text-base font-semibold flex items-center justify-center gap-1 md:gap-2 px-2 md:px-3 hover:bg-blue-800 transition-colors ${className}`}
     {...props}
   >
-    <CrosshairIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />
-    <span className="text-[15px] md:text-base">내위치</span>
+    <CrosshairIcon className="w-4 h-4 md:w-6 md:h-6 text-white shrink-0" />
+    <span className="whitespace-nowrap truncate">내위치</span>
   </Button>
 );
 

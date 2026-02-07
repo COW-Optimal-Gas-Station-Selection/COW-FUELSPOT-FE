@@ -22,7 +22,48 @@ const MainPageLayout = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [detectedSido, setDetectedSido] = useState(null);
   const [priceDrawerOpen, setPriceDrawerOpen] = useState(false);
+  const [mobileDrawerTab, setMobileDrawerTab] = useState(null); // null(아무것도 안 열림) | 'average' | 'calc' | 'qa'
+  const [closing, setClosing] = useState(false);
+  const [closingTab, setClosingTab] = useState(null);
+  const [contentExpanded, setContentExpanded] = useState(false);
   const drawerRef = useRef(null);
+  const contentWrapRef = useRef(null);
+
+  const effectiveTab = closing ? closingTab : mobileDrawerTab;
+
+  // 드로어 열릴 때마다 메뉴 선택 초기화
+  useEffect(() => {
+    if (priceDrawerOpen) setMobileDrawerTab(null);
+  }, [priceDrawerOpen]);
+
+  // 촤라락 열림: 탭 선택 시 contentExpanded 켜기
+  useEffect(() => {
+    if (effectiveTab && !closing) {
+      setContentExpanded(false);
+      const id = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setContentExpanded(true));
+      });
+      return () => cancelAnimationFrame(id);
+    } else {
+      setContentExpanded(false);
+    }
+  }, [effectiveTab, closing]);
+
+  const handleCloseTab = () => {
+    setClosingTab(mobileDrawerTab);
+    setClosing(true);
+  };
+
+  const handleContentTransitionEnd = (e) => {
+    if (e.target !== contentWrapRef.current || e.propertyName !== 'grid-template-rows') return;
+    if (closing) {
+      setMobileDrawerTab(null);
+      setClosingTab(null);
+      setClosing(false);
+      setContentExpanded(false);
+    }
+  };
+
   const touchStartX = useRef(0);
 
   useEffect(() => {
@@ -282,21 +323,75 @@ const MainPageLayout = () => {
           aria-hidden
         />
       )}
-      {/* 모바일: 유가 드로어 패널 (오른쪽에서 슬라이드 인) */}
+      {/* 모바일: 사이드바 (평균유가 / 유류비계산 / Q&A) - 디폴트는 메뉴만, 선택 시 콘텐츠 */}
       <aside
         ref={drawerRef}
-        className="xl:hidden fixed right-0 top-0 bottom-0 w-[min(280px,85vw)] bg-white shadow-xl z-50 flex flex-col transition-transform duration-300 ease-out"
+        className="xl:hidden fixed right-0 top-0 bottom-0 w-[min(280px,85vw)] bg-white shadow-xl z-50 flex flex-col transition-transform duration-300 ease-out overflow-hidden"
         style={{ transform: priceDrawerOpen ? 'translateX(0)' : 'translateX(100%)' }}
         onTouchStart={handleDrawerTouchStart}
         onTouchMove={handleDrawerTouchMove}
         onTouchEnd={handleDrawerTouchEnd}
       >
-        <div className="p-4 border-b border-gray-100 shrink-0">
-          <h2 className="text-lg font-bold text-gray-800">평균 유가</h2>
-        </div>
-        <div className="flex-1 overflow-y-auto p-4">
-          <AveragePricePanel initialSido={detectedSido} />
-        </div>
+        {/* 디폴트: 세 메뉴만 표시, 아무것도 열리지 않음 */}
+        {mobileDrawerTab === null && !closing && (
+          <nav className="flex flex-col flex-1 min-h-0 py-2">
+            <button type="button" onClick={() => setMobileDrawerTab('average')} className="w-full px-4 py-4 text-left text-base font-bold text-gray-700 hover:bg-gray-50 border-l-4 border-transparent">평균 유가</button>
+            <button type="button" onClick={() => setMobileDrawerTab('calc')} className="w-full px-4 py-4 text-left text-base font-bold text-gray-700 hover:bg-gray-50 border-l-4 border-transparent">유류비계산</button>
+            <button type="button" onClick={() => setMobileDrawerTab('qa')} className="w-full px-4 py-4 text-left text-base font-bold text-gray-700 hover:bg-gray-50 border-l-4 border-transparent">Q&A</button>
+          </nav>
+        )}
+        {effectiveTab === 'average' && (
+          <div key="average" className="flex flex-col flex-1 min-h-0">
+            <nav className="shrink-0 border-b border-gray-100">
+              <button type="button" onClick={handleCloseTab} className="w-full px-4 py-4 text-left text-base font-bold text-blue-900 bg-blue-50/50 border-l-4 border-blue-600">평균 유가</button>
+            </nav>
+            <div ref={contentWrapRef} onTransitionEnd={handleContentTransitionEnd} className="flex-1 min-h-0 grid transition-[grid-template-rows] duration-300 ease-out" style={{ gridTemplateRows: closing ? '0fr' : contentExpanded ? '1fr' : '0fr' }}>
+              <div className="min-h-0 overflow-hidden">
+                <div className="overflow-y-auto overflow-x-hidden p-4 h-full [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full">
+                  <AveragePricePanel initialSido={detectedSido} />
+                </div>
+              </div>
+            </div>
+            <nav className="shrink-0 border-t border-gray-100">
+              <button type="button" onClick={() => setMobileDrawerTab('calc')} className="w-full px-4 py-4 text-left text-base font-bold text-gray-700 hover:bg-gray-50 border-l-4 border-transparent">유류비계산</button>
+              <button type="button" onClick={() => setMobileDrawerTab('qa')} className="w-full px-4 py-4 text-left text-base font-bold text-gray-700 hover:bg-gray-50 border-l-4 border-transparent">Q&A</button>
+            </nav>
+          </div>
+        )}
+        {effectiveTab === 'calc' && (
+          <div key="calc" className="flex flex-col flex-1 min-h-0">
+            <nav className="shrink-0 border-b border-gray-100">
+              <button type="button" onClick={() => setMobileDrawerTab('average')} className="w-full px-4 py-4 text-left text-base font-bold text-gray-700 hover:bg-gray-50 border-l-4 border-transparent">평균 유가</button>
+              <button type="button" onClick={handleCloseTab} className="w-full px-4 py-4 text-left text-base font-bold text-blue-900 bg-blue-50/50 border-l-4 border-blue-600">유류비계산</button>
+            </nav>
+            <div ref={contentWrapRef} onTransitionEnd={handleContentTransitionEnd} className="flex-1 min-h-0 grid transition-[grid-template-rows] duration-300 ease-out" style={{ gridTemplateRows: closing ? '0fr' : contentExpanded ? '1fr' : '0fr' }}>
+              <div className="min-h-0 overflow-hidden">
+                <div className="bg-white flex items-center justify-center p-6 h-full min-h-[120px]">
+                  <p className="text-gray-500 text-base font-medium">준비중입니다!</p>
+                </div>
+              </div>
+            </div>
+            <nav className="shrink-0 border-t border-gray-100">
+              <button type="button" onClick={() => setMobileDrawerTab('qa')} className="w-full px-4 py-4 text-left text-base font-bold text-gray-700 hover:bg-gray-50 border-l-4 border-transparent">Q&A</button>
+            </nav>
+          </div>
+        )}
+        {effectiveTab === 'qa' && (
+          <div key="qa" className="flex flex-col flex-1 min-h-0">
+            <nav className="shrink-0 border-b border-gray-100">
+              <button type="button" onClick={() => setMobileDrawerTab('average')} className="w-full px-4 py-4 text-left text-base font-bold text-gray-700 hover:bg-gray-50 border-l-4 border-transparent">평균 유가</button>
+              <button type="button" onClick={() => setMobileDrawerTab('calc')} className="w-full px-4 py-4 text-left text-base font-bold text-gray-700 hover:bg-gray-50 border-l-4 border-transparent">유류비계산</button>
+              <button type="button" onClick={handleCloseTab} className="w-full px-4 py-4 text-left text-base font-bold text-blue-900 bg-blue-50/50 border-l-4 border-blue-600">Q&A</button>
+            </nav>
+            <div ref={contentWrapRef} onTransitionEnd={handleContentTransitionEnd} className="flex-1 min-h-0 grid transition-[grid-template-rows] duration-300 ease-out" style={{ gridTemplateRows: closing ? '0fr' : contentExpanded ? '1fr' : '0fr' }}>
+              <div className="min-h-0 overflow-hidden">
+                <div className="bg-white flex items-center justify-center p-6 h-full min-h-[120px]">
+                  <p className="text-gray-500 text-base font-medium">준비중입니다!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </aside>
       <div className="flex-1 flex flex-row w-full max-w-[1550px] mx-auto min-h-0 overflow-y-auto overflow-x-hidden lg:overflow-hidden">
         <aside className="hidden xl:block w-[280px] p-6 pr-0 overflow-y-auto shrink-0">

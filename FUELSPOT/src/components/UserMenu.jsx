@@ -38,19 +38,19 @@ export default function UserMenu({ user }) {
   }
 
   return (
-    <div className="flex items-center gap-10 md:gap-12 ml-2">
-      <span className={`${linkClass} hidden md:inline`}>Q&A</span>
-      <span className={`${linkClass} hidden md:inline`}>유류비계산</span>
+    <div className="flex items-center gap-4 md:gap-6 ml-2">
+      <span className={`${linkClass} hidden md:inline text-sm md:text-base`}>Q&A</span>
+      <span className={`${linkClass} hidden md:inline text-sm md:text-base`}>유류비계산</span>
       <div 
-        className="flex items-center gap-3 cursor-pointer group"
+        className="flex items-center gap-1.5 md:gap-2 cursor-pointer group shrink-0"
         onClick={() => navigate('/mypage')}
       >
-        <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all duration-200">
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all duration-200 shrink-0">
+          <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
         </div>
-        <span className="font-bold text-base text-gray-700 group-hover:text-blue-600 transition-colors hidden sm:block">
+        <span className="font-bold text-sm md:text-base text-gray-700 group-hover:text-blue-600 transition-colors hidden sm:block truncate max-w-18 md:max-w-20">
           {(user.nickname || user.name)}님
         </span>
       </div>
@@ -59,7 +59,7 @@ export default function UserMenu({ user }) {
         tabIndex={0}
         onClick={handleLogout}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleLogout(); } }}
-        className={linkClass}
+        className={`${linkClass} text-sm md:text-base whitespace-nowrap`}
       >
         로그아웃
       </span>

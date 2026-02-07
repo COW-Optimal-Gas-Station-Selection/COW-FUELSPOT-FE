@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { logout } from '../api/memberService'
 
-const linkClass = 'text-blue-900 font-bold text-lg cursor-pointer transition-transform duration-200 hover:-translate-y-0.5';
+const linkClass = 'text-blue-900 font-bold text-sm md:text-lg cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 whitespace-nowrap';
 
 export default function UserMenu({ user }) {
   const navigate = useNavigate()

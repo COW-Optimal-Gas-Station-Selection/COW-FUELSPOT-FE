@@ -210,8 +210,7 @@ const MainPageLayout = () => {
   const handleDrawerTouchMove = (e) => {
     const x = e.touches[0].clientX;
     const delta = x - touchStartX.current;
-    if (priceDrawerOpen && delta < -50) setPriceDrawerOpen(false);
-    else if (!priceDrawerOpen && delta > 40) setPriceDrawerOpen(true);
+    if (priceDrawerOpen && delta > 50) setPriceDrawerOpen(false);
   };
   const handleDrawerTouchEnd = () => {};
   const handleEdgeDragStart = (e) => {
@@ -219,7 +218,7 @@ const MainPageLayout = () => {
   };
   const handleEdgeDragMove = (e) => {
     const x = e.touches ? e.touches[0].clientX : e.clientX;
-    if (x - touchStartX.current > 50) setPriceDrawerOpen(true);
+    if (touchStartX.current - x > 50) setPriceDrawerOpen(true);
   };
 
   // 길찾기 버튼 클릭 시
@@ -255,20 +254,20 @@ const MainPageLayout = () => {
   return (
     <div className="flex flex-col h-screen bg-[#f9fafb] overflow-hidden">
       <Header user={user} />
-      {/* 모바일: 유가 패널 열기/닫기 탭 - 항상 창 바깥(닫힐 땐 왼쪽, 열릴 땐 드로어 오른쪽) */}
+      {/* 모바일: 유가 패널 열기/닫기 탭 - 오른쪽(닫힐 땐 화면 오른쪽, 열릴 땐 드로어 왼쪽 가장자리) */}
       <div
-        className="xl:hidden fixed top-1/2 -translate-y-1/2 z-[60] flex items-center transition-[left] duration-300 ease-out"
-        style={{ left: priceDrawerOpen ? 'min(280px, 85vw)' : 0 }}
+        className="xl:hidden fixed top-1/2 -translate-y-1/2 z-[60] flex items-center transition-[right] duration-300 ease-out"
+        style={{ right: priceDrawerOpen ? 'min(280px, 85vw)' : 0 }}
         onTouchStart={handleEdgeDragStart}
         onTouchMove={handleEdgeDragMove}
       >
         <button
           type="button"
           onClick={() => setPriceDrawerOpen((prev) => !prev)}
-          className={`flex items-center justify-center w-12 h-28 md:h-32 bg-white border border-gray-200 shadow-md hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer ${priceDrawerOpen ? 'rounded-r-xl border-l-0' : 'rounded-l-none rounded-r-2xl border-l-0'}`}
+          className={`flex items-center justify-center w-8 h-24 md:h-28 backdrop-blur-sm border border-gray-200/60 shadow-md transition-colors cursor-pointer ${priceDrawerOpen ? 'rounded-l-xl border-r-0 bg-white/50 hover:bg-white/60' : 'rounded-r-none rounded-l-2xl border-r-0 bg-white/40 hover:bg-white/55 active:bg-white/50'}`}
           aria-label={priceDrawerOpen ? '유가 정보 닫기' : '유가 정보 열기'}
         >
-          <svg className={`w-6 h-6 text-gray-600 transition-transform ${priceDrawerOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className={`w-5 h-5 text-gray-600 transition-transform ${priceDrawerOpen ? '' : 'rotate-180'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </button>
@@ -279,15 +278,15 @@ const MainPageLayout = () => {
           className="xl:hidden fixed inset-0 bg-black/40 z-40 transition-opacity"
           onClick={() => setPriceDrawerOpen(false)}
           onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
-          onTouchEnd={(e) => { if (e.changedTouches[0].clientX < touchStartX.current - 50) setPriceDrawerOpen(false); }}
+          onTouchEnd={(e) => { if (e.changedTouches[0].clientX > touchStartX.current + 50) setPriceDrawerOpen(false); }}
           aria-hidden
         />
       )}
-      {/* 모바일: 유가 드로어 패널 */}
+      {/* 모바일: 유가 드로어 패널 (오른쪽에서 슬라이드 인) */}
       <aside
         ref={drawerRef}
-        className="xl:hidden fixed left-0 top-0 bottom-0 w-[min(280px,85vw)] bg-white shadow-xl z-50 flex flex-col transition-transform duration-300 ease-out"
-        style={{ transform: priceDrawerOpen ? 'translateX(0)' : 'translateX(-100%)' }}
+        className="xl:hidden fixed right-0 top-0 bottom-0 w-[min(280px,85vw)] bg-white shadow-xl z-50 flex flex-col transition-transform duration-300 ease-out"
+        style={{ transform: priceDrawerOpen ? 'translateX(0)' : 'translateX(100%)' }}
         onTouchStart={handleDrawerTouchStart}
         onTouchMove={handleDrawerTouchMove}
         onTouchEnd={handleDrawerTouchEnd}

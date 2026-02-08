@@ -51,13 +51,28 @@ const KakaoMapRoute = ({ mapInstance, from, to }) => {
   useEffect(() => {
     if (!mapInstance || path.length === 0) return;
 
+    // Create a visually appealing polyline (thicker, rounded, and with a shadow effect)
     const polyline = new window.kakao.maps.Polyline({
       map: mapInstance,
       path: path,
-      strokeWeight: 5,
-      strokeColor: '#155dfc',
-      strokeOpacity: 0.8,
+      strokeWeight: 8, // thicker
+      strokeColor: '#2563eb', // vivid blue
+      strokeOpacity: 0.95,
       strokeStyle: 'solid',
+      strokeLineCap: 'round', // rounded ends
+      zIndex: 10
+    });
+
+    // Add a shadow polyline for a glow effect
+    const shadowPolyline = new window.kakao.maps.Polyline({
+      map: mapInstance,
+      path: path,
+      strokeWeight: 16,
+      strokeColor: '#2563eb',
+      strokeOpacity: 0.18,
+      strokeStyle: 'solid',
+      strokeLineCap: 'round',
+      zIndex: 0
     });
 
     // 경로에 맞춰 지도 범위 확장
@@ -67,6 +82,7 @@ const KakaoMapRoute = ({ mapInstance, from, to }) => {
 
     return () => {
       polyline.setMap(null);
+      shadowPolyline.setMap(null);
     };
   }, [mapInstance, path]);
 

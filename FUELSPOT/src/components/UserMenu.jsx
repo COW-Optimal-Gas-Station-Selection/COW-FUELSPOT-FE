@@ -5,7 +5,7 @@ import { logout } from '../api/memberService';
 
 const linkClass = 'text-blue-900 font-bold text-base md:text-xl cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 whitespace-nowrap';
 
-export default function UserMenu({ user }) {
+export default function UserMenu({ user, onLoginClick }) {
   const navigate = useNavigate()
 
   if (!user) {
@@ -16,8 +16,8 @@ export default function UserMenu({ user }) {
         <span
           role="button"
           tabIndex={0}
-          onClick={() => navigate('/login')}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/login'); } }}
+          onClick={onLoginClick}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onLoginClick(); } }}
           className={linkClass}
         >
           로그인

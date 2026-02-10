@@ -127,3 +127,25 @@ export const deleteAccount = async () => {
     }
   }
 };
+
+// 내 차 정보 조회
+export const getMyCar = async () => {
+  try {
+    const response = await api.get('/members/car');
+    return response;
+  } catch (error) {
+    console.error('Failed to get my car info:', error);
+    throw error;
+  }
+};
+
+// 내 차 등록/수정
+export const registerCar = async (carData) => {
+  try {
+    const response = await api.post('/members/car', carData);
+    return response;
+  } catch (error) {
+    console.error('Failed to register car:', error);
+    throw error;
+  }
+};

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { addFavorite, getFavorites, removeFavorite } from '../../../api/favoriteService'
 import { getStationDetail } from '../../../api/stationService'
 import { FUEL_TYPE } from '../../../components/FuelPriceBox'
-import FavoriteButton from '../../mainpage/atoms/FavoriteButton'
 import StationCard from '../../mainpage/molecules/StationCard'
 
 function FavoriteStationsSection() {
@@ -107,15 +106,13 @@ function FavoriteStationsSection() {
       <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar flex-1">
         {favoriteStations.length > 0 ? (
           favoriteStations.map(station => (
-            <div key={station.id} className="relative bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-              <StationCard station={station} />
-              <div className="absolute top-4 right-4 z-[1]">
-                <FavoriteButton
-                  stationId={station.id}
-                  isFavorite={true}
-                  onToggle={handleToggleFavorite}
-                />
-              </div>
+            <div key={station.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+              <StationCard
+                station={station}
+                isFavorite={true}
+                onToggleFavorite={handleToggleFavorite}
+                isLoggedIn={true}
+              />
             </div>
           ))
         ) : (

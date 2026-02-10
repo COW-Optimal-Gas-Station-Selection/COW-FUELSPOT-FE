@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { changePassword, deleteAccount, getMyInfo, updateMyInfo } from '../../api/memberService'
+import { changePassword, deleteAccount, getMyCar, getMyInfo, registerCar, updateMyInfo } from '../../api/memberService'
 import Button from '../../components/Button'
 import Modal from '../../components/Modal'
 import { validateConfirmPassword, validateNickname, validatePassword } from '../../utils/validation'
+import Header from '../mainpage/organisms/Header'
 import MyPageTitle from './atoms/MyPageTitle'
 import DeleteAccountModal from './organisms/DeleteAccountModal'
 import EditProfileSection from './organisms/EditProfileSection'
 import FavoriteStationsSection from './organisms/FavoriteStationsSection'
-import MyPageNavBar from './organisms/MyPageNavBar'
 import PasswordChangeModal from './organisms/PasswordChangeModal'
-import RecentKeywordsSection from './organisms/RecentKeywordsSection'
 
 function MyPage() {
   const navigate = useNavigate()
@@ -18,6 +17,8 @@ function MyPage() {
   const [nickname, setNickname] = useState('')
   const [fuelType, setFuelType] = useState('GASOLINE')
   const [radius, setRadius] = useState(3)
+  const [brand, setBrand] = useState('')
+  const [selectedCar, setSelectedCar] = useState(null)
 
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -34,7 +35,6 @@ function MyPage() {
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-
     getMyInfo()
       .then((data) => {
         setUser(data)
@@ -45,17 +45,20 @@ function MyPage() {
       })
       .catch((error) => {
         console.error('Failed to fetch user info:', error)
-        const userStr = localStorage.getItem('user')
-        if (userStr) {
-          const userData = JSON.parse(userStr)
-          setUser(userData)
-          setNickname(userData.nickname || userData.name || '')
-          setFuelType(userData.fuelType || 'GASOLINE')
-          setRadius(userData.radius || 3)
-        } else {
-          navigate('/login')
+      })
+
+    getMyCar()
+      .then((data) => {
+        if (data && data.carName) {
+          setBrand(data.brand || '')
+          setSelectedCar({
+            modelName: data.carName,
+            fuelType: data.fuelType,
+            fuelEfficiency: data.fuelEfficiency
+          })
         }
       })
+      .catch((error) => console.error('Failed to fetch car info:', error))
   }, [navigate])
 
   const nicknameRequirements = validateNickname(nickname)
@@ -87,7 +90,18 @@ function MyPage() {
       .then((data) => {
         setUser(data)
         localStorage.setItem('user', JSON.stringify(data))
-        alert('회원 정보가 성공적으로 수정되었습니다.')
+
+        // 자동차 정보도 업데이트
+        if (brand && selectedCar) {
+          return registerCar({
+            brand: brand,
+            modelName: selectedCar.modelName,
+            fuelType: fuelType
+          })
+        }
+      })
+      .then(() => {
+        alert('회원 정보와 자동차 정보가 성공적으로 수정되었습니다.')
       })
       .catch((error) => {
         setErrorMessage(error.message || '정보 수정 중 오류가 발생했습니다.')
@@ -128,13 +142,12 @@ function MyPage() {
 
   const handleDeleteAccount = () => {
     deleteAccount()
-    deleteAccount()
       .then(() => {
         localStorage.removeItem('user')
         localStorage.removeItem('accessToken')
         localStorage.removeItem('refreshToken')
         alert('회원 탈퇴가 완료되었습니다. 그동안 이용해주셔서 감사합니다.')
-        navigate('/login')
+        navigate('/')
       })
       .catch((error) => {
         setErrorMessage(error.message)
@@ -147,7 +160,7 @@ function MyPage() {
 
   return (
     <>
-      <MyPageNavBar user={user} />
+      <Header user={user} />
       <div className="min-h-screen bg-gray-50 p-4 py-8 md:py-12">
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -162,6 +175,10 @@ function MyPage() {
               radius={radius}
               setRadius={setRadius}
               radiusError={radiusError}
+              brand={brand}
+              setBrand={setBrand}
+              selectedCar={selectedCar}
+              setSelectedCar={setSelectedCar}
               handleUpdate={handleUpdate}
               setShowPasswordModal={setShowPasswordModal}
               setShowDeleteConfirmModal={setShowDeleteConfirmModal}
@@ -174,7 +191,6 @@ function MyPage() {
               <div className="flex-1">
                 <FavoriteStationsSection />
               </div>
-              <RecentKeywordsSection />
             </div>
           </div>
         </div>

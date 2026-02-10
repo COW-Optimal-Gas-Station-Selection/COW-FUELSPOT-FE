@@ -1,5 +1,18 @@
 import api from './axios';
 
+// 검색 기록 추가
+export const addSearchLog = async (keyword) => {
+    try {
+        const response = await api.post('/search/log', null, {
+            params: { keyword }
+        });
+        return response;
+    } catch (error) {
+        console.error('Failed to add search log:', error);
+        throw error;
+    }
+};
+
 // 최근 검색어 조회
 export const getRecentKeywords = async () => {
     try {

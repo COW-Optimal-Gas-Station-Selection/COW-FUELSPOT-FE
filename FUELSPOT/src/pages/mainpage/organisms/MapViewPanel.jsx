@@ -1,18 +1,23 @@
-import KakaoMap from '../molecules/KakaoMap';
 import LocationButton from '../atoms/LocationButton';
 import SearchInput from '../atoms/SearchInput';
+import KakaoMap from '../molecules/KakaoMap';
 
-const MapViewPanel = ({ 
-  stations = [], 
-  selectedStation, 
-  onMarkerClick, 
-  routeTo, 
-  currentLocation, 
+const MapViewPanel = ({
+  stations = [],
+  selectedStation,
+  onMarkerClick,
+  routeTo,
+  onCloseRoute,
+  currentLocation,
   onLocationClick,
   searchKeyword,
   onSearchChange,
   suggestions = [],
-  onSuggestionClick
+  onSuggestionClick,
+  recentKeywords = [],
+  onDeleteRecentKeyword,
+  onDeleteAllRecentKeywords,
+  selectedFuel
 }) => {
   return (
     <div className="bg-white rounded-[10px] shadow-sm flex flex-col border border-gray-100 h-full relative">
@@ -20,11 +25,14 @@ const MapViewPanel = ({
       <div className="p-3 md:p-4 border-b border-gray-100 z-20 bg-[#f9fafb] rounded-t-[10px]">
         <div className="flex flex-row items-center gap-2 min-w-0">
           <div className="flex-1 min-w-0 relative">
-            <SearchInput 
+            <SearchInput
               value={searchKeyword}
               onChange={onSearchChange}
               suggestions={suggestions}
               onSuggestionClick={onSuggestionClick}
+              recentKeywords={recentKeywords}
+              onDeleteRecentKeyword={onDeleteRecentKeyword}
+              onDeleteAllRecentKeywords={onDeleteAllRecentKeywords}
             />
           </div>
           <div className="shrink-0 w-[90px] md:w-[130px]">
@@ -40,7 +48,9 @@ const MapViewPanel = ({
           selectedStation={selectedStation}
           onMarkerClick={onMarkerClick}
           routeTo={routeTo}
+          onCloseRoute={onCloseRoute}
           currentLocation={currentLocation}
+          selectedFuel={selectedFuel}
         />
       </div>
     </div>

@@ -17,7 +17,7 @@ function FavoriteStationsSection() {
     try {
       setLoading(true)
       const data = await getFavorites() // [{ favoriteId, stationId }, ...]
-      
+
       if (!data || data.length === 0) {
         setFavoriteStations([])
         return
@@ -25,13 +25,13 @@ function FavoriteStationsSection() {
 
       const detailPromises = data.map(f => getStationDetail(f.stationId))
       const rawDetails = await Promise.all(detailPromises)
-      
+
       // 백엔드 데이터를 프론트엔드 형식으로 변환 (MainPageLayout과 동일한 로직 적용)
       const mappedDetails = rawDetails.map(s => ({
         id: String(s.id),
         name: s.name,
         brand: s.brand,
-        address: s.address, 
+        address: s.address,
         tel: s.tel,
         isCarWash: s.isCarWash,
         tradeDate: s.tradeDate,
@@ -42,11 +42,12 @@ function FavoriteStationsSection() {
         prices: [
           { type: FUEL_TYPE.GASOLINE, price: s.prices?.GASOLINE || 0 },
           { type: FUEL_TYPE.DIESEL, price: s.prices?.DIESEL || 0 },
-          { type: FUEL_TYPE.PREMIUM, price: s.prices?.PREMIUM_GASOLINE || 0 },
-          { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 }
+          { type: FUEL_TYPE.PREMIUM_GASOLINE, price: s.prices?.PREMIUM_GASOLINE || 0 },
+          { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 },
+          { type: FUEL_TYPE.KEROSENE, price: s.prices?.KEROSENE || 0 }
         ].filter(p => p.price && p.price > 0)
       }));
-      
+
       setFavoriteStations(mappedDetails)
     } catch (error) {
       console.error('Failed to load favorites:', error)
@@ -58,7 +59,7 @@ function FavoriteStationsSection() {
   const handleToggleFavorite = async (stationId) => {
     try {
       const isCurrentlyFavorite = favoriteStations.some(s => s.id === stationId)
-      
+
       if (isCurrentlyFavorite) {
         if (!confirm('즐겨찾기에서 삭제하시겠습니까?')) return;
         await removeFavorite(stationId)
@@ -70,7 +71,7 @@ function FavoriteStationsSection() {
           id: String(s.id),
           name: s.name,
           brand: s.brand,
-          address: s.address, 
+          address: s.address,
           tel: s.tel,
           isCarWash: s.isCarWash,
           tradeDate: s.tradeDate,
@@ -81,8 +82,9 @@ function FavoriteStationsSection() {
           prices: [
             { type: FUEL_TYPE.GASOLINE, price: s.prices?.GASOLINE || 0 },
             { type: FUEL_TYPE.DIESEL, price: s.prices?.DIESEL || 0 },
-            { type: FUEL_TYPE.PREMIUM, price: s.prices?.PREMIUM_GASOLINE || 0 },
-            { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 }
+            { type: FUEL_TYPE.PREMIUM_GASOLINE, price: s.prices?.PREMIUM_GASOLINE || 0 },
+            { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 },
+            { type: FUEL_TYPE.KEROSENE, price: s.prices?.KEROSENE || 0 }
           ].filter(p => p.price && p.price > 0)
         }
         setFavoriteStations(prev => [...prev, mapped])

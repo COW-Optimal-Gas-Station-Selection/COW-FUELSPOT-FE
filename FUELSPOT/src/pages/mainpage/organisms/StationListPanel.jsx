@@ -83,8 +83,13 @@ const StationListPanel = forwardRef(({ stations = [], selectedStationId, onStati
     });
   } else if (sortType === 'premium') {
     sortedStations.sort((a, b) => {
-      const getPremium = s => (s.prices.find(p => p.type === FUEL_TYPE.PREMIUM)?.price ?? Infinity);
+      const getPremium = s => (s.prices.find(p => p.type === FUEL_TYPE.PREMIUM_GASOLINE)?.price ?? Infinity);
       return getPremium(a) - getPremium(b);
+    });
+  } else if (sortType === 'kerosene') {
+    sortedStations.sort((a, b) => {
+      const getKerosene = s => (s.prices.find(p => p.type === FUEL_TYPE.KEROSENE)?.price ?? Infinity);
+      return getKerosene(a) - getKerosene(b);
     });
   } else if (sortType === 'lpg') {
     sortedStations.sort((a, b) => {

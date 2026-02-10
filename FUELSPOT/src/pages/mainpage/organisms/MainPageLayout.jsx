@@ -11,7 +11,7 @@ const MainPageLayout = () => {
   const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedStation, setSelectedStation] = useState(null);
-  const [routeTo, setRouteTo] = useState(null); 
+  const [routeTo, setRouteTo] = useState(null);
   const [currentLocation, setCurrentLocation] = useState({ lat: 37.5665, lng: 126.9780 });
   const [user, setUser] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -137,15 +137,15 @@ const MainPageLayout = () => {
           lat: currentLocation.lat,
           radius: radius
         };
-        
+
         const data = await getNearbyStations(params);
-        
+
         // 백엔드 데이터를 프론트엔드 형식으로 변환
         const mappedStations = data.map(s => ({
           id: String(s.id),
           name: s.name,
           brand: s.brand,
-          address: s.address, 
+          address: s.address,
           tel: s.tel,
           isCarWash: s.isCarWash,
           tradeDate: s.tradeDate,
@@ -156,11 +156,12 @@ const MainPageLayout = () => {
           prices: [
             { type: FUEL_TYPE.GASOLINE, price: s.prices?.GASOLINE || 0 },
             { type: FUEL_TYPE.DIESEL, price: s.prices?.DIESEL || 0 },
-            { type: FUEL_TYPE.PREMIUM, price: s.prices?.PREMIUM_GASOLINE || 0 },
-            { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 }
+            { type: FUEL_TYPE.PREMIUM_GASOLINE, price: s.prices?.PREMIUM_GASOLINE || 0 },
+            { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 },
+            { type: FUEL_TYPE.KEROSENE, price: s.prices?.KEROSENE || 0 }
           ].filter(p => p.price > 0)
         }));
-        
+
         setStations(mappedStations);
       } catch (error) {
         console.error('Error fetching stations:', error);
@@ -208,7 +209,7 @@ const MainPageLayout = () => {
     setCurrentLocation(newLoc);
     setSearchKeyword(place.place_name);
     setSuggestions([]);
-    
+
     setSelectedStation(null);
     setRouteTo(null);
   };
@@ -253,7 +254,7 @@ const MainPageLayout = () => {
     const delta = x - touchStartX.current;
     if (priceDrawerOpen && delta > 50) setPriceDrawerOpen(false);
   };
-  const handleDrawerTouchEnd = () => {};
+  const handleDrawerTouchEnd = () => { };
   const handleEdgeDragStart = (e) => {
     touchStartX.current = e.touches ? e.touches[0].clientX : e.clientX;
   };
@@ -272,9 +273,9 @@ const MainPageLayout = () => {
   const handleLocationClick = () => {
     setSelectedStation(null);
     setRouteTo(null);
-    setSearchKeyword(''); 
+    setSearchKeyword('');
     setSuggestions([]);
-    
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         pos => {
@@ -398,11 +399,11 @@ const MainPageLayout = () => {
           <AveragePricePanel initialSido={detectedSido} />
         </aside>
         <main className="flex-1 p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 relative min-h-0 overflow-visible">
-          <MapViewPanel 
-            stations={stations} 
-            selectedStation={selectedStation} 
-            onMarkerClick={handleMarkerClick} 
-            routeTo={routeTo} 
+          <MapViewPanel
+            stations={stations}
+            selectedStation={selectedStation}
+            onMarkerClick={handleMarkerClick}
+            routeTo={routeTo}
             currentLocation={currentLocation}
             onLocationClick={handleLocationClick}
             searchKeyword={searchKeyword}
@@ -411,12 +412,12 @@ const MainPageLayout = () => {
             onSuggestionClick={handleSuggestionClick}
           />
           <div className="min-h-[600px] lg:min-h-0 lg:h-full">
-            <StationListPanel 
-              stations={stations} 
+            <StationListPanel
+              stations={stations}
               selectedStationId={selectedStation?.id}
-              onStationClick={handleStationClick} 
-              onNavigate={handleNavigate} 
-              ref={listPanelRef} 
+              onStationClick={handleStationClick}
+              onNavigate={handleNavigate}
+              ref={listPanelRef}
             />
           </div>
         </main>

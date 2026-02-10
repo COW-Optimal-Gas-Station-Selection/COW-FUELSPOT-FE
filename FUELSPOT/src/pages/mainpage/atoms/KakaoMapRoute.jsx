@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getDirections } from '../../../api/stationService';
 
 const KakaoMapRoute = ({ mapInstance, from, to }) => {
   const [path, setPath] = useState([]);
+  const polylineRef = useRef(null);
 
   useEffect(() => {
     if (!mapInstance || !from || !to) return;
@@ -51,29 +52,19 @@ const KakaoMapRoute = ({ mapInstance, from, to }) => {
   useEffect(() => {
     if (!mapInstance || path.length === 0) return;
 
-    // Create a visually appealing polyline (thicker, rounded, and with a shadow effect)
-    const polyline = new window.kakao.maps.Polyline({
+    if (polylineRef.current) {
+      polylineRef.current.setMap(null);
+      polylineRef.current = null;
+    }
+    const dashedPolyline = new window.kakao.maps.Polyline({
       map: mapInstance,
       path: path,
-      strokeWeight: 8, // thicker
-      strokeColor: '#2563eb', // vivid blue
-      strokeOpacity: 0.95,
-      strokeStyle: 'solid',
-      strokeLineCap: 'round', // rounded ends
-      zIndex: 10
+      strokeWeight: 4,
+      strokeColor: '#000000',
+      strokeOpacity: 1,
+      strokeStyle: 'shortdash',
     });
-
-    // Add a shadow polyline for a glow effect
-    const shadowPolyline = new window.kakao.maps.Polyline({
-      map: mapInstance,
-      path: path,
-      strokeWeight: 16,
-      strokeColor: '#2563eb',
-      strokeOpacity: 0.18,
-      strokeStyle: 'solid',
-      strokeLineCap: 'round',
-      zIndex: 0
-    });
+    polylineRef.current = dashedPolyline;
 
     // 경로에 맞춰 지도 범위 확장
     const bounds = new window.kakao.maps.LatLngBounds();
@@ -81,8 +72,10 @@ const KakaoMapRoute = ({ mapInstance, from, to }) => {
     mapInstance.setBounds(bounds);
 
     return () => {
-      polyline.setMap(null);
-      shadowPolyline.setMap(null);
+      if (polylineRef.current) {
+        polylineRef.current.setMap(null);
+        polylineRef.current = null;
+      }
     };
   }, [mapInstance, path]);
 

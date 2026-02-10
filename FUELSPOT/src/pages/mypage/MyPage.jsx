@@ -10,6 +10,7 @@ import EditProfileSection from './organisms/EditProfileSection'
 import FavoriteStationsSection from './organisms/FavoriteStationsSection'
 import MyPageNavBar from './organisms/MyPageNavBar'
 import PasswordChangeModal from './organisms/PasswordChangeModal'
+import RecentKeywordsSection from './organisms/RecentKeywordsSection'
 
 function MyPage() {
   const navigate = useNavigate()
@@ -17,16 +18,16 @@ function MyPage() {
   const [nickname, setNickname] = useState('')
   const [fuelType, setFuelType] = useState('GASOLINE')
   const [radius, setRadius] = useState(3)
-  
+
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  
+
   const [nicknameError, setNicknameError] = useState('')
   const [fuelTypeError, setFuelTypeError] = useState('')
   const [radiusError, setRadiusError] = useState('')
   const [passwordError, setPasswordError] = useState('')
-  
+
   const [showErrorModal, setShowErrorModal] = useState(false)
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
@@ -101,7 +102,7 @@ function MyPage() {
       setPasswordError('현재 비밀번호를 입력해주세요')
       return
     }
-    
+
     if (!newPasswordRequirements.isLengthValid || !newPasswordRequirements.isComplexValid) {
       setPasswordError('비밀번호는 8자 이상이며 영문, 숫자, 특수문자를 포함해야 합니다')
       return
@@ -150,7 +151,7 @@ function MyPage() {
       <div className="min-h-screen bg-gray-50 p-4 py-8 md:py-12">
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-            <EditProfileSection 
+            <EditProfileSection
               nickname={nickname}
               setNickname={setNickname}
               nicknameError={nicknameError}
@@ -167,18 +168,19 @@ function MyPage() {
               navigate={navigate}
             />
 
-            {/* Right Panel: Favorites */}
+            {/* Right Panel: Favorites & Search Log */}
             <div className="bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] p-8 md:p-10 border border-gray-100 h-full min-h-[600px] flex flex-col">
               <MyPageTitle title="즐겨찾는 주유소" color="yellow-400" />
               <div className="flex-1">
                 <FavoriteStationsSection />
               </div>
+              <RecentKeywordsSection />
             </div>
           </div>
         </div>
       </div>
 
-      <PasswordChangeModal 
+      <PasswordChangeModal
         isOpen={showPasswordModal}
         onClose={() => {
           setShowPasswordModal(false)
@@ -199,14 +201,14 @@ function MyPage() {
         handleChangePassword={handleChangePassword}
       />
 
-      <DeleteAccountModal 
+      <DeleteAccountModal
         isOpen={showDeleteConfirmModal}
         onClose={() => setShowDeleteConfirmModal(false)}
         handleDeleteAccount={handleDeleteAccount}
       />
 
       {showErrorModal && (
-        <Modal 
+        <Modal
           onClose={() => setShowErrorModal(false)}
           title="오류 발생"
         >

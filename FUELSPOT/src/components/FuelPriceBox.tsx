@@ -3,17 +3,19 @@ import React from "react";
 export enum FUEL_TYPE {
   GASOLINE = '휘발유',
   DIESEL = '경유',
-  PREMIUM = '고급휘발유',
+  PREMIUM_GASOLINE = '고급휘발유',
   LPG = '자동차부탄',
+  KEROSENE = '실내등유',
 }
 
-type FuelType = FUEL_TYPE.GASOLINE | FUEL_TYPE.DIESEL | FUEL_TYPE.PREMIUM | FUEL_TYPE.LPG;
+type FuelType = FUEL_TYPE.GASOLINE | FUEL_TYPE.DIESEL | FUEL_TYPE.PREMIUM_GASOLINE | FUEL_TYPE.LPG | FUEL_TYPE.KEROSENE;
 
 const FUEL_STYLE: Record<FuelType, { accent: string }> = {
   [FUEL_TYPE.GASOLINE]: { accent: 'border-l-blue-400' },
   [FUEL_TYPE.DIESEL]: { accent: 'border-l-cyan-500' },
-  [FUEL_TYPE.PREMIUM]: { accent: 'border-l-indigo-400' },
+  [FUEL_TYPE.PREMIUM_GASOLINE]: { accent: 'border-l-indigo-400' },
   [FUEL_TYPE.LPG]: { accent: 'border-l-slate-400' },
+  [FUEL_TYPE.KEROSENE]: { accent: 'border-l-orange-400' },
 };
 
 interface FuelPriceBoxProps {

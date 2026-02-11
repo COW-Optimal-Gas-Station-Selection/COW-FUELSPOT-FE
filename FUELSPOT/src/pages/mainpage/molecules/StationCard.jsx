@@ -80,10 +80,10 @@ const StationCard = ({
 
       {/* Prices */}
       <div className="grid grid-cols-2 gap-2.5">
-        {Object.entries(station.prices || {})
-          .filter(([_, price]) => price > 0)
-          .map(([key, price], idx) => (
-            <FuelPriceBox key={idx} fuelType={FUEL_TYPE[key]} price={price} />
+        {['GASOLINE', 'DIESEL', 'PREMIUM_GASOLINE', 'KEROSENE', 'LPG']
+          .filter(key => station.prices?.[key] > 0)
+          .map((key, idx) => (
+            <FuelPriceBox key={idx} fuelType={FUEL_TYPE[key]} price={station.prices[key]} />
           ))}
       </div>
 

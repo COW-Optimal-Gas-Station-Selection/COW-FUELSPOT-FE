@@ -13,21 +13,25 @@ const getLocalFavoriteIds = () => {
   }
 };
 
-const StationListPanel = forwardRef(({ stations = [], selectedStationId, onStationClick, onNavigate }, ref) => {
-  const [sortType, setSortType] = useState('optimal');
+const StationListPanel = forwardRef(({
+  stations = [],
+  user,
+  selectedStationId,
+  onStationClick,
+  onNavigate,
+  sortType,
+  onSortChange
+}, ref) => {
   const [favoriteIds, setFavoriteIds] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const isLoggedIn = !!user;
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      setIsLoggedIn(true);
+    if (isLoggedIn) {
       loadBackendFavorites();
     } else {
-      setIsLoggedIn(false);
       setFavoriteIds(getLocalFavoriteIds());
     }
-  }, []);
+  }, [user, isLoggedIn]);
 
   const loadBackendFavorites = async () => {
     try {
@@ -37,10 +41,6 @@ const StationListPanel = forwardRef(({ stations = [], selectedStationId, onStati
       console.error('Failed to load backend favorites:', error);
       setFavoriteIds(getLocalFavoriteIds().map(id => String(id)));
     }
-  };
-
-  const handleSortChange = (value) => {
-    setSortType(value);
   };
 
   const handleToggleFavorite = async (stationId) => {
@@ -63,33 +63,35 @@ const StationListPanel = forwardRef(({ stations = [], selectedStationId, onStati
   };
 
   let sortedStations = [...stations];
-  if (sortType === 'distance') {
+  const currentSort = sortType || 'optimal';
+
+  if (currentSort === 'distance') {
     sortedStations.sort((a, b) => {
       const d1 = parseFloat(a.distance);
       const d2 = parseFloat(b.distance);
       return d1 - d2;
     });
-  } else if (sortType === 'gasoline') {
+  } else if (currentSort === 'gasoline') {
     sortedStations.sort((a, b) => {
       const getGasoline = s => (s.prices?.GASOLINE ?? Infinity);
       return getGasoline(a) - getGasoline(b);
     });
-  } else if (sortType === 'diesel') {
+  } else if (currentSort === 'diesel') {
     sortedStations.sort((a, b) => {
       const getDiesel = s => (s.prices?.DIESEL ?? Infinity);
       return getDiesel(a) - getDiesel(b);
     });
-  } else if (sortType === 'premium') {
+  } else if (currentSort === 'premium') {
     sortedStations.sort((a, b) => {
       const getPremium = s => (s.prices?.PREMIUM_GASOLINE ?? Infinity);
       return getPremium(a) - getPremium(b);
     });
-  } else if (sortType === 'kerosene') {
+  } else if (currentSort === 'kerosene') {
     sortedStations.sort((a, b) => {
       const getKerosene = s => (s.prices?.KEROSENE ?? Infinity);
       return getKerosene(a) - getKerosene(b);
     });
-  } else if (sortType === 'lpg') {
+  } else if (currentSort === 'lpg') {
     sortedStations.sort((a, b) => {
       const getLpg = s => (s.prices?.LPG ?? Infinity);
       return getLpg(a) - getLpg(b);
@@ -104,7 +106,7 @@ const StationListPanel = forwardRef(({ stations = [], selectedStationId, onStati
           <span className="text-blue-500 text-lg font-bold">({stations.length})</span>
         </div>
         <div className="shrink-0">
-          <StationFilterBox sortType={sortType} onSortChange={handleSortChange} />
+          <StationFilterBox sortType={currentSort} onSortChange={onSortChange} />
         </div>
       </div>
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-0 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300">

@@ -158,7 +158,22 @@ const MainPageLayout = () => {
     const userStr = localStorage.getItem('user');
     if (userStr) {
       try {
-        setUser(JSON.parse(userStr));
+        const parsedUser = JSON.parse(userStr);
+        setUser(parsedUser);
+
+        // 선호 유종에 맞춰 초기 정렬 및 지도 표시 유종 설정
+        if (parsedUser.fuelType) {
+          const fuelTypeMap = {
+            'GASOLINE': 'gasoline',
+            'DIESEL': 'diesel',
+            'PREMIUM_GASOLINE': 'premium',
+            'LPG': 'lpg',
+            'KEROSENE': 'kerosene'
+          };
+          const fuel = fuelTypeMap[parsedUser.fuelType] || 'gasoline';
+          setSelectedFuel(fuel);
+          setSortType(fuel);
+        }
       } catch {
         setUser(null);
       }
@@ -257,6 +272,30 @@ const MainPageLayout = () => {
   const handleLoginSuccess = (userData) => {
     setUser(userData);
     setIsLoginModalOpen(false);
+
+    // 선호 유종에 맞춰 초기 정렬 및 지도 표시 유종 설정
+    if (userData.fuelType) {
+      const fuelTypeMap = {
+        'GASOLINE': 'gasoline',
+        'DIESEL': 'diesel',
+        'PREMIUM_GASOLINE': 'premium',
+        'LPG': 'lpg',
+        'KEROSENE': 'kerosene'
+      };
+      const fuel = fuelTypeMap[userData.fuelType] || 'gasoline';
+      setSelectedFuel(fuel);
+      setSortType(fuel);
+    }
+  };
+
+  const handleSortChange = (newSortType) => {
+    setSortType(newSortType);
+
+    // 유종으로 정렬할 경우 지도 표시 유종도 변경
+    const fuels = ['gasoline', 'diesel', 'premium', 'lpg', 'kerosene'];
+    if (fuels.includes(newSortType)) {
+      setSelectedFuel(newSortType);
+    }
   };
 
   // 내 위치 가져오기
@@ -661,6 +700,7 @@ const MainPageLayout = () => {
                   localStorage.removeItem('user');
                   localStorage.removeItem('accessToken');
                   localStorage.removeItem('refreshToken');
+                  navigate('/');
                   window.location.reload();
                 }
               }}
@@ -710,21 +750,18 @@ const MainPageLayout = () => {
               ${mobileListLevel === 2 ? 'h-[88vh]' : mobileListLevel === 1 ? 'h-[45vh]' : 'h-[64px]'}
             `}
           >
-            {/* 바텀 시트 핸들/헤더 (모바일 전용) */}
+            {/* 모바일 핸들 및 헤더 */}
             <div
-              className={`xl:hidden h-[64px] flex items-center justify-center border-b border-gray-100 bg-white sticky top-0 z-20 touch-none ${mobileListLevel === 2 ? 'cursor-s-resize' : 'cursor-n-resize'} select-none`}
+              className="xl:hidden h-16 w-full flex flex-col items-center justify-center cursor-pointer select-none border-b border-gray-50 bg-white sticky top-0 z-10"
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
-              onPointerCancel={handlePointerUp}
               onClick={handleSheetClick}
             >
-              <div className="flex flex-col items-center gap-1.5">
-                <div className={`w-12 h-1.5 rounded-full transition-colors duration-300 ${mobileListLevel === 2 ? 'bg-blue-400' : 'bg-gray-200'}`}></div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-gray-700">주유소 목록</span>
-                  <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs font-bold rounded-full">{stations.length}개</span>
-                </div>
+              <div className={`w-12 h-1.5 rounded-full transition-colors duration-300 mb-2 ${mobileListLevel === 2 ? 'bg-blue-400' : 'bg-gray-200'}`}></div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-gray-700">주유소 목록</span>
+                <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs font-bold rounded-full">{stations.length}개</span>
               </div>
             </div>
 
@@ -734,16 +771,19 @@ const MainPageLayout = () => {
             >
               <StationListPanel
                 stations={stations}
+                user={user}
                 selectedStationId={selectedStation?.id}
                 onStationClick={(s) => {
                   handleStationClick(s);
-                  if (window.innerWidth < 1280) setMobileListLevel(1); // 선택 시 중간 높이로
+                  if (window.innerWidth < 1280) setMobileListLevel(1);
                 }}
                 onNavigate={(s) => {
                   handleNavigate(s);
-                  if (window.innerWidth < 1280) setMobileListLevel(1); // 길찾기 시 중간 높이로
+                  if (window.innerWidth < 1280) setMobileListLevel(1);
                 }}
                 ref={listPanelRef}
+                sortType={sortType}
+                onSortChange={handleSortChange}
               />
             </div>
           </div>

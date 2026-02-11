@@ -35,6 +35,7 @@ export default function UserMenu({ user, onLoginClick }) {
       localStorage.removeItem('user')
       localStorage.removeItem('accessToken')
       localStorage.removeItem('refreshToken')
+      navigate('/')
       window.location.reload()
     }
   }
@@ -52,7 +53,7 @@ export default function UserMenu({ user, onLoginClick }) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
-            <span className="font-bold text-sm md:text-base text-gray-700 group-hover:text-blue-600 transition-colors hidden sm:block truncate max-w-18 md:max-w-20">
+            <span className="font-bold text-sm md:text-base text-gray-700 group-hover:text-blue-600 transition-colors truncate max-w-[80px] md:max-w-20">
               {(user.nickname || user.name)}님
             </span>
             <svg className="w-3 h-3 text-gray-400 group-hover:text-blue-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">

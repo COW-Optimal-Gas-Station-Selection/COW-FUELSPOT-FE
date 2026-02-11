@@ -33,12 +33,12 @@ const EditProfileSection = ({
       {/* 아코디언 헤더 */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-8 md:p-10 flex items-center justify-between hover:bg-gray-50/50 transition-colors group"
+        className="w-full p-8 md:p-10 flex items-center justify-between hover:bg-gray-50/50 lg:hover:bg-transparent transition-colors group lg:cursor-default"
       >
-        <div className="mb-0"> {/* MyPageTitle 내부의 mb-8을 상쇄하기 위해 mb-0 설정 */}
+        <div className="mb-0">
           <MyPageTitle title="회원 정보 수정" color="blue-600" />
         </div>
-        <div className={`w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+        <div className={`w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all duration-300 lg:hidden ${isOpen ? 'rotate-180' : ''}`}>
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
           </svg>
@@ -46,9 +46,9 @@ const EditProfileSection = ({
       </button>
 
       {/* 아코디언 컨텐츠 */}
-      <div className={`grid transition-all duration-500 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+      <div className={`grid transition-all duration-500 ease-in-out lg:grid-rows-[1fr] lg:opacity-100 ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
         <div className="overflow-hidden">
-          <div className="p-8 md:p-10 pt-0 border-t border-gray-50 space-y-8 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="p-8 md:p-10 pt-0 border-t border-gray-50 lg:border-t-0 space-y-8 animate-in fade-in slide-in-from-top-4 duration-500">
             <NameInputSection
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}

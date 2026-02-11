@@ -16,14 +16,14 @@ function FuelTypeInputSection({ value, onChange, error }) {
 
   return (
     <div className="mb-6">
-      <Label htmlFor="fuelType" className="text-gray-700 font-bold mb-2 block">선호 유종</Label>
+      <Label htmlFor="fuelType" className="text-gray-600 font-semibold mb-1.5 block text-xs">선호 유종</Label>
 
       <div className="mt-1 relative">
         <Listbox value={value} onChange={onChange}>
-          <Listbox.Button className="relative w-full bg-white border border-gray-100 rounded-xl py-3.5 px-4 text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-blue-200 text-sm font-bold text-gray-700 flex items-center justify-between">
+          <Listbox.Button className="relative w-full bg-white border border-gray-200 rounded-xl py-3 px-4 text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 text-sm font-medium text-gray-700 flex items-center justify-between">
             <span className="block truncate">{selectedType.label}</span>
-            <span className="pointer-events-none flex items-center">
-              <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+            <span className="pointer-events-none flex items-center text-gray-400">
+              <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor">
                 <path d="M7 8l3 3 3-3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </span>
@@ -35,13 +35,13 @@ function FuelTypeInputSection({ value, onChange, error }) {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Listbox.Options className="absolute z-10 mt-2 w-full bg-white shadow-xl max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm border border-gray-50/50">
+            <Listbox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-xl py-1 text-base ring-1 ring-black/5 overflow-auto focus:outline-none sm:text-sm border border-gray-100">
               {fuelTypes.map((type) => (
                 <Listbox.Option
                   key={type.value}
                   className={({ active }) =>
-                    `${active ? 'text-blue-900 bg-blue-50/60' : 'text-gray-700'}
-                          cursor-pointer select-none relative py-3.5 px-4 transition-colors duration-150`
+                    `${active ? 'text-blue-600 bg-blue-50' : 'text-gray-600'}
+                          cursor-pointer select-none relative py-2.5 px-4 transition-colors duration-150`
                   }
                   value={type.value}
                 >

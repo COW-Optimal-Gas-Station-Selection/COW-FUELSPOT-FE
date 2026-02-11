@@ -37,8 +37,8 @@ api.interceptors.response.use(
 
     // Skip retry for login and refresh token requests
     if (
-      error.response && 
-      error.response.status === 401 && 
+      error.response &&
+      error.response.status === 401 &&
       !originalRequest._retry &&
       !originalRequest.url.includes('/auth/login') &&
       !originalRequest.url.includes('/auth/reissue')
@@ -52,13 +52,20 @@ api.interceptors.response.use(
         if (!refreshToken) {
           throw new Error('Refresh token not found');
         }
-        const response = await axios.post('/api/auth/reissue', {
+
+        // Use the api instance itself to benefit from baseURL and other configs
+        // The interceptor's url check will prevent recursion
+        const result = await api.post('/auth/reissue', {
           accessToken: accessToken,
           refreshToken: refreshToken
         });
 
-        // Backend returns ApiResponse<TokenDto>
-        const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data.result;
+        // The response interceptor already unwraps result for successful responses
+        const { accessToken: newAccessToken, refreshToken: newRefreshToken } = result;
+
+        if (!newAccessToken || !newRefreshToken) {
+          throw new Error('Invalid token response structure');
+        }
 
         localStorage.setItem('accessToken', newAccessToken);
         localStorage.setItem('refreshToken', newRefreshToken);
@@ -66,12 +73,19 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError.message || refreshError);
 
-        console.error('Token refresh failed', refreshError);
+        // Clear all session data
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
-        window.location.href = '/login';
+
+        // Redirect to home and let the UI handle the guest state
+        if (window.location.pathname !== '/') {
+          window.location.href = '/';
+        } else {
+          window.location.reload();
+        }
         return Promise.reject(refreshError);
       }
     }

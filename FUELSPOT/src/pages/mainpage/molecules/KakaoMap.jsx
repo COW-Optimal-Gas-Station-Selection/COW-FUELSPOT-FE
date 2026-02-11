@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import KakaoMapCurrentLocationMarker from '../atoms/KakaoMapCurrentLocationMarker';
 import KakaoMapMarker from '../atoms/KakaoMapMarker';
-import KakaoMapMarkerLabel from '../atoms/KakaoMapMarkerLabel';
 import KakaoMapRoute from '../atoms/KakaoMapRoute';
 
 const KAKAO_MAP_KEY = import.meta.env.VITE_KAKAO_MAP_KEY;
@@ -17,7 +16,9 @@ const KakaoMap = ({
   selectedStation = null,
   onMarkerClick,
   routeTo = null,
+  onCloseRoute,
   currentLocation = { lat: 37.5665, lng: 126.9780 },
+  selectedFuel,
   ...props
 }) => {
   const mapRef = useRef(null);
@@ -64,8 +65,9 @@ const KakaoMap = ({
     // 화면 리사이즈 시 지도 크기 재조정 (반응형)
     const handleResize = () => {
       if (mapInstance.current) {
+        const currentCenter = mapInstance.current.getCenter();
         mapInstance.current.relayout();
-        mapInstance.current.setCenter(new window.kakao.maps.LatLng(lat, lng));
+        mapInstance.current.setCenter(currentCenter);
       }
     };
 
@@ -111,31 +113,26 @@ const KakaoMap = ({
               position={currentLocation}
             />
           )}
-          {/* 주유소 마커 */}
-          {stations && stations.length > 0 && stations.map(
-            station =>
-              station.lat && station.lng ? (
-                <React.Fragment key={station.id}>
-                  <KakaoMapMarker
-                    mapInstance={mapInstance.current}
-                    position={new window.kakao.maps.LatLng(station.lat, station.lng)}
-                    station={station}
-                    onClick={onMarkerClick}
-                  />
-                  <KakaoMapMarkerLabel
-                    mapInstance={mapInstance.current}
-                    position={new window.kakao.maps.LatLng(station.lat, station.lng)}
-                    name={station.name}
-                  />
-                </React.Fragment>
-              ) : null
+          {stations && stations.length > 0 && stations.map(station =>
+            station.lat && station.lng ? (
+              <KakaoMapMarker
+                key={station.id}
+                mapInstance={mapInstance.current}
+                position={new window.kakao.maps.LatLng(station.lat, station.lng)}
+                station={station}
+                isSelected={selectedStation?.id === station.id}
+                selectedFuel={selectedFuel}
+                onClick={onMarkerClick}
+              />
+            ) : null
           )}
           {/* 경로 표시 */}
           {routeTo && routeTo.lat && routeTo.lng && (
             <KakaoMapRoute
               mapInstance={mapInstance.current}
-              from={new window.kakao.maps.LatLng(currentLocation.lat, currentLocation.lng)}
-              to={new window.kakao.maps.LatLng(routeTo.lat, routeTo.lng)}
+              from={currentLocation}
+              to={routeTo}
+              onClose={onCloseRoute}
             />
           )}
         </>

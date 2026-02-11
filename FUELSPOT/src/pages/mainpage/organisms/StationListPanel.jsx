@@ -1,7 +1,6 @@
 import { forwardRef, useEffect, useState } from 'react';
 import { addFavorite, getFavorites, removeFavorite } from '../../../api/favoriteService';
 import { FUEL_TYPE } from '../../../components/FuelPriceBox';
-import FavoriteButton from '../atoms/FavoriteButton';
 import StationFilterBox from '../atoms/StationFilterBox';
 import StationCard from '../molecules/StationCard';
 
@@ -83,8 +82,13 @@ const StationListPanel = forwardRef(({ stations = [], selectedStationId, onStati
     });
   } else if (sortType === 'premium') {
     sortedStations.sort((a, b) => {
-      const getPremium = s => (s.prices.find(p => p.type === FUEL_TYPE.PREMIUM)?.price ?? Infinity);
+      const getPremium = s => (s.prices.find(p => p.type === FUEL_TYPE.PREMIUM_GASOLINE)?.price ?? Infinity);
       return getPremium(a) - getPremium(b);
+    });
+  } else if (sortType === 'kerosene') {
+    sortedStations.sort((a, b) => {
+      const getKerosene = s => (s.prices.find(p => p.type === FUEL_TYPE.KEROSENE)?.price ?? Infinity);
+      return getKerosene(a) - getKerosene(b);
     });
   } else if (sortType === 'lpg') {
     sortedStations.sort((a, b) => {
@@ -94,34 +98,29 @@ const StationListPanel = forwardRef(({ stations = [], selectedStationId, onStati
   }
 
   return (
-    <div ref={ref} className="bg-white rounded-[10px] shadow-sm overflow-visible flex flex-col border border-gray-100 min-h-[600px] lg:h-full">
-      <div className="bg-[#f9fafb] border-b border-gray-100 p-3 md:p-4 flex items-center gap-1 md:gap-2 sticky top-0 z-10 shrink-0 justify-between overflow-visible flex-nowrap min-w-0">
-        <div className="flex items-center gap-1 md:gap-2 min-w-0 shrink">
-          <h2 className="text-[#1e2939] text-sm md:text-xl font-bold whitespace-nowrap">주유소 목록</h2>
-          <span className="text-[#155dfc] text-sm md:text-xl font-bold whitespace-nowrap shrink-0">({stations.length}개)</span>
+    <div ref={ref} className="h-full flex flex-col bg-white">
+      <div className="p-5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white z-10 sticky top-0">
+        <div className="flex items-center gap-2">
+          <h2 className="text-slate-800 text-lg font-bold">주유소 목록</h2>
+          <span className="text-blue-500 text-lg font-bold">({stations.length})</span>
         </div>
         <div className="shrink-0">
           <StationFilterBox sortType={sortType} onSortChange={handleSortChange} />
         </div>
       </div>
-      <div className="overflow-visible flex-none lg:flex-1 lg:min-h-0 lg:overflow-y-auto lg:overflow-x-hidden custom-scrollbar rounded-b-[10px]">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-0 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300">
         {sortedStations.map(station => (
-          <div key={station.id} className="relative group">
+          <div key={station.id} className="relative border-b border-slate-50 last:border-0">
             <StationCard
               station={station}
               isSelected={selectedStationId === station.id}
+              isFavorite={favoriteIds.includes(station.id)}
+              onToggleFavorite={handleToggleFavorite}
+              isLoggedIn={isLoggedIn}
               onClick={() => onStationClick && onStationClick(station)}
               onNavigate={onNavigate}
               data-station-id={station.id}
             />
-            <div className={`absolute top-4 right-4 z-[1] ${selectedStationId === station.id ? 'opacity-100' : ''}`}>
-              <FavoriteButton
-                stationId={station.id}
-                isFavorite={favoriteIds.includes(station.id)}
-                onToggle={handleToggleFavorite}
-                disabled={!isLoggedIn}
-              />
-            </div>
           </div>
         ))}
       </div>

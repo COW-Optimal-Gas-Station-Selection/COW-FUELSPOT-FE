@@ -4,6 +4,13 @@ import PriceCard from '../molecules/PriceCard';
 
 const SIDO_LIST = [
   { id: 'SEOUL', name: '서울' },
+  { id: 'BUSAN', name: '부산' },
+  { id: 'DAEGU', name: '대구' },
+  { id: 'INCHEON', name: '인천' },
+  { id: 'GWANGJU', name: '광주' },
+  { id: 'DAEJEON', name: '대전' },
+  { id: 'ULSAN', name: '울산' },
+  { id: 'SEJONG', name: '세종' },
   { id: 'GYEONGGI', name: '경기' },
   { id: 'GANGWON', name: '강원' },
   { id: 'CHUNGBUK', name: '충북' },
@@ -12,7 +19,6 @@ const SIDO_LIST = [
   { id: 'JEONNAM', name: '전남' },
   { id: 'GYEONGBUK', name: '경북' },
   { id: 'GYEONGNAM', name: '경남' },
-  { id: 'BUSAN', name: '부산' },
   { id: 'JEJU', name: '제주' },
 ];
 

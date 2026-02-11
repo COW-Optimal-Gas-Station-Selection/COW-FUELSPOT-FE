@@ -4,11 +4,12 @@ import { signup } from '../../api/memberService'
 import Button from '../../components/Button'
 import Modal from '../../components/Modal'
 import {
-    validateConfirmPassword,
-    validateEmail,
-    validateNickname,
-    validatePassword
+  validateConfirmPassword,
+  validateEmail,
+  validateNickname,
+  validatePassword
 } from '../../utils/validation'
+import CarInputSection from './organisms/CarInputSection'
 import ConfirmPasswordInputSection from './organisms/ConfirmPasswordInputSection'
 import EmailInputSection from './organisms/EmailInputSection'
 import FuelTypeInputSection from './organisms/FuelTypeInputSection'
@@ -26,14 +27,16 @@ function Signup() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [fuelType, setFuelType] = useState('GASOLINE')
   const [radius, setRadius] = useState(3)
-  
+  const [brand, setBrand] = useState('')
+  const [selectedCar, setSelectedCar] = useState(null)
+
   const [nicknameError, setNicknameError] = useState('')
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [confirmPasswordError, setConfirmPasswordError] = useState('')
   const [fuelTypeError, setFuelTypeError] = useState('')
   const [radiusError, setRadiusError] = useState('')
-  
+
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [showErrorModal, setShowErrorModal] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -109,7 +112,9 @@ function Signup() {
       checkPassword: confirmPassword,
       nickname,
       fuelType,
-      radius: parseInt(radius)
+      radius: parseInt(radius),
+      brand: brand,
+      carName: selectedCar?.modelName
     }
 
     signup(signupData)
@@ -125,7 +130,7 @@ function Signup() {
 
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false)
-    navigate('/login')
+    navigate('/')
   }
 
   const handleErrorModalClose = () => {
@@ -137,7 +142,7 @@ function Signup() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center p-4 py-16">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-white/50 backdrop-blur-sm">
           <SignupHeader />
-          
+
           <div className="space-y-6">
             <section>
               <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
@@ -183,18 +188,33 @@ function Signup() {
                 onChange={(e) => setRadius(e.target.value)}
                 error={radiusError}
               />
+
+              <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4 mt-6 flex items-center gap-2">
+                <span className="w-4 h-[1px] bg-gray-300"></span> 자동차 정보
+              </h3>
+              <CarInputSection
+                brand={brand}
+                model={selectedCar}
+                onBrandChange={(val) => setBrand(val)}
+                onModelChange={(car) => {
+                  setSelectedCar(car)
+                  if (car?.fuelType) {
+                    setFuelType(car.fuelType)
+                  }
+                }}
+              />
             </section>
           </div>
 
           <div className="mt-10">
-            <Button 
-              className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-200 transition-all duration-300 active:scale-95 text-base font-bold" 
+            <Button
+              className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-200 transition-all duration-300 active:scale-95 text-base font-bold"
               onClick={handleSignup}
             >
               회원가입 완료
             </Button>
           </div>
-          
+
           <div className="mt-8">
             <SignupFooter />
           </div>
@@ -205,7 +225,7 @@ function Signup() {
         onClose={handleSuccessModalClose}
         type="success"
         title="회원가입 성공!"
-        message="회원가입이 완료되었습니다. 로그인 페이지로 이동합니다."
+        message="회원가입이 완료되었습니다. 메인 페이지로 이동합니다."
       />
       <Modal
         isOpen={showErrorModal}

@@ -6,6 +6,7 @@ const sortOptions = [
   { value: 'gasoline', label: '가격순(휘발유)', icon: <span className="text-red-500"></span> },
   { value: 'diesel', label: '가격순(경유)', icon: <span className="text-blue-500"></span> },
   { value: 'premium', label: '가격순(고급휘발유)', icon: <span className="text-yellow-500"></span> },
+  { value: 'kerosene', label: '가격순(실내등유)', icon: <span className="text-orange-500"></span> },
   { value: 'lpg', label: '가격순(LPG)', icon: <span className="text-teal-500"></span> },
 ];
 

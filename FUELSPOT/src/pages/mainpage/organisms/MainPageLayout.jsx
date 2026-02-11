@@ -1,21 +1,25 @@
 
 import { useEffect, useRef, useState } from 'react';
+import { addSearchLog, deleteAllKeywords, deleteKeyword, getRecentKeywords } from '../../../api/searchService';
 import { getAddressFromCoords, getNearbyStations, searchPlaces } from '../../../api/stationService';
 import { FUEL_TYPE } from '../../../components/FuelPriceBox';
 import AveragePricePanel from './AveragePricePanel';
 import Header from './Header';
+import LoginModal from './LoginModal';
 import MapViewPanel from './MapViewPanel';
+import SignupModal from './SignupModal';
 import StationListPanel from './StationListPanel';
 
 const MainPageLayout = () => {
   const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedStation, setSelectedStation] = useState(null);
-  const [routeTo, setRouteTo] = useState(null); 
-  const [currentLocation, setCurrentLocation] = useState({ lat: 37.5665, lng: 126.9780 });
+  const [routeTo, setRouteTo] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState(null);
   const [user, setUser] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [suggestions, setSuggestions] = useState([]);
+  const [recentKeywords, setRecentKeywords] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [selectedFuel, setSelectedFuel] = useState('gasoline');
   const [sortType, setSortType] = useState('optimal');
@@ -26,6 +30,11 @@ const MainPageLayout = () => {
   const [closing, setClosing] = useState(false);
   const [closingTab, setClosingTab] = useState(null);
   const [contentExpanded, setContentExpanded] = useState(false);
+
+  // 모달 상태
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+
   const drawerRef = useRef(null);
   const contentWrapRef = useRef(null);
 
@@ -73,20 +82,20 @@ const MainPageLayout = () => {
         const address = await getAddressFromCoords(currentLocation.lat, currentLocation.lng);
         if (address) {
           if (address.includes('서울')) setDetectedSido('SEOUL');
+          else if (address.includes('인천')) setDetectedSido('INCHEON');
+          else if (address.includes('대전')) setDetectedSido('DAEJEON');
+          else if (address.includes('광주')) setDetectedSido('GWANGJU');
+          else if (address.includes('대구')) setDetectedSido('DAEGU');
+          else if (address.includes('울산')) setDetectedSido('ULSAN');
+          else if (address.includes('세종')) setDetectedSido('SEJONG');
           else if (address.includes('경기')) setDetectedSido('GYEONGGI');
-          else if (address.includes('인천')) setDetectedSido('GYEONGGI');
           else if (address.includes('강원')) setDetectedSido('GANGWON');
           else if (address.includes('충북') || address.includes('충청북도')) setDetectedSido('CHUNGBUK');
           else if (address.includes('충남') || address.includes('충청남도')) setDetectedSido('CHUNGNAM');
-          else if (address.includes('세종')) setDetectedSido('CHUNGNAM');
-          else if (address.includes('대전')) setDetectedSido('CHUNGNAM');
           else if (address.includes('전북') || address.includes('전라북도')) setDetectedSido('JEONBUK');
           else if (address.includes('전남') || address.includes('전라남도')) setDetectedSido('JEONNAM');
-          else if (address.includes('광주')) setDetectedSido('JEONNAM');
           else if (address.includes('경북') || address.includes('경상북도')) setDetectedSido('GYEONGBUK');
-          else if (address.includes('대구')) setDetectedSido('GYEONGBUK');
           else if (address.includes('경남') || address.includes('경상남도')) setDetectedSido('GYEONGNAM');
-          else if (address.includes('울산')) setDetectedSido('GYEONGNAM');
           else if (address.includes('부산')) setDetectedSido('BUSAN');
           else if (address.includes('제주')) setDetectedSido('JEJU');
         }
@@ -108,7 +117,91 @@ const MainPageLayout = () => {
     } else {
       setUser(null);
     }
+    fetchRecentKeywords();
   }, []);
+
+  const fetchRecentKeywords = async () => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      try {
+        const data = await getRecentKeywords();
+        setRecentKeywords(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Failed to fetch recent keywords:', error);
+      }
+    } else {
+      const local = JSON.parse(localStorage.getItem('recentKeywords') || '[]');
+      setRecentKeywords(local);
+    }
+  };
+
+  const saveSearchKeyword = (keyword) => {
+    if (!keyword || !keyword.trim()) return;
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      const local = JSON.parse(localStorage.getItem('recentKeywords') || '[]');
+      const filtered = local.filter(k => k !== keyword);
+      const updated = [keyword, ...filtered].slice(0, 10);
+      localStorage.setItem('recentKeywords', JSON.stringify(updated));
+      setRecentKeywords(updated);
+    } else {
+      // 로그인 상태일 때 수동으로 서버에 저장 API 호출
+      addSearchLog(keyword).catch(err => console.error('Failed to save search log on server:', err));
+    }
+  };
+
+  const handleDeleteRecentKeyword = async (keyword) => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      try {
+        await deleteKeyword(keyword);
+        setRecentKeywords(prev => prev.filter(k => k !== keyword));
+      } catch (error) {
+        console.error('Failed to delete keyword:', error);
+      }
+    } else {
+      const local = JSON.parse(localStorage.getItem('recentKeywords') || '[]');
+      const updated = local.filter(k => k !== keyword);
+      localStorage.setItem('recentKeywords', JSON.stringify(updated));
+      setRecentKeywords(updated);
+    }
+  };
+
+  const handleDeleteAllRecentKeywords = async () => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      try {
+        await deleteAllKeywords();
+        setRecentKeywords([]);
+      } catch (error) {
+        console.error('Failed to delete all keywords:', error);
+      }
+    } else {
+      localStorage.removeItem('recentKeywords');
+      setRecentKeywords([]);
+    }
+  };
+
+  // 로그인 모달 핸들러
+  const openLoginModal = () => {
+    setIsSignupModalOpen(false);
+    setIsLoginModalOpen(true);
+  };
+
+  const closeLoginModal = () => setIsLoginModalOpen(false);
+
+  // 회원가입 모달 핸들러
+  const openSignupModal = () => {
+    setIsLoginModalOpen(false);
+    setIsSignupModalOpen(true);
+  };
+
+  const closeSignupModal = () => setIsSignupModalOpen(false);
+
+  const handleLoginSuccess = (userData) => {
+    setUser(userData);
+    setIsLoginModalOpen(false);
+  };
 
   // 내 위치 가져오기
   useEffect(() => {
@@ -120,15 +213,21 @@ const MainPageLayout = () => {
         },
         err => {
           console.error('Geolocation error:', err);
+          // 위치 권한 거부 등의 경우 기본 위치(서울)로 설정
+          setCurrentLocation({ lat: 37.5665, lng: 126.9780 });
         },
         { enableHighAccuracy: true, timeout: 10000 }
       );
+    } else {
+      // Geolocation 미지원 시 기본 위치
+      setCurrentLocation({ lat: 37.5665, lng: 126.9780 });
     }
   }, []);
 
   // 주유소 목록 가져오기
   useEffect(() => {
     const fetchStations = async () => {
+      if (!currentLocation) return;
       try {
         setLoading(true);
         const radius = (user?.radius || 3) * 1000; // km to m
@@ -137,15 +236,15 @@ const MainPageLayout = () => {
           lat: currentLocation.lat,
           radius: radius
         };
-        
+
         const data = await getNearbyStations(params);
-        
+
         // 백엔드 데이터를 프론트엔드 형식으로 변환
         const mappedStations = data.map(s => ({
           id: String(s.id),
           name: s.name,
           brand: s.brand,
-          address: s.address, 
+          address: s.address,
           tel: s.tel,
           isCarWash: s.isCarWash,
           tradeDate: s.tradeDate,
@@ -156,11 +255,12 @@ const MainPageLayout = () => {
           prices: [
             { type: FUEL_TYPE.GASOLINE, price: s.prices?.GASOLINE || 0 },
             { type: FUEL_TYPE.DIESEL, price: s.prices?.DIESEL || 0 },
-            { type: FUEL_TYPE.PREMIUM, price: s.prices?.PREMIUM_GASOLINE || 0 },
-            { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 }
+            { type: FUEL_TYPE.PREMIUM_GASOLINE, price: s.prices?.PREMIUM_GASOLINE || 0 },
+            { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 },
+            { type: FUEL_TYPE.KEROSENE, price: s.prices?.KEROSENE || 0 }
           ].filter(p => p.price > 0)
         }));
-        
+
         setStations(mappedStations);
       } catch (error) {
         console.error('Error fetching stations:', error);
@@ -201,16 +301,37 @@ const MainPageLayout = () => {
     return () => clearTimeout(timer);
   }, [searchKeyword, isTyping]);
 
-  // 검색 결과 선택 시
-  const handleSuggestionClick = (place) => {
+  // 검색 결과 또는 최근 검색어 선택 시
+  const handleSuggestionClick = async (place) => {
     setIsTyping(false);
+    setSuggestions([]);
+
+    if (place.isKeyword) {
+      setSearchKeyword(place.place_name);
+      try {
+        const data = await searchPlaces(place.place_name);
+        if (data && data.documents && data.documents.length > 0) {
+          const firstResult = data.documents[0];
+          const newLoc = { lat: Number(firstResult.y), lng: Number(firstResult.x) };
+          setCurrentLocation(newLoc);
+          setSearchKeyword(firstResult.place_name);
+          saveSearchKeyword(place.place_name); // 순서 업데이트를 위해 저장 호출
+          fetchRecentKeywords();
+        }
+      } catch (error) {
+        console.error('Recent keyword search failed:', error);
+      }
+      return;
+    }
+
     const newLoc = { lat: Number(place.y), lng: Number(place.x) };
     setCurrentLocation(newLoc);
     setSearchKeyword(place.place_name);
-    setSuggestions([]);
-    
+
     setSelectedStation(null);
     setRouteTo(null);
+    saveSearchKeyword(place.place_name); // 검색어 저장
+    fetchRecentKeywords(); // 최근 검색어 동기화 (서버 반영 등)
   };
 
   const handleSearchChange = (e) => {
@@ -253,7 +374,7 @@ const MainPageLayout = () => {
     const delta = x - touchStartX.current;
     if (priceDrawerOpen && delta > 50) setPriceDrawerOpen(false);
   };
-  const handleDrawerTouchEnd = () => {};
+  const handleDrawerTouchEnd = () => { };
   const handleEdgeDragStart = (e) => {
     touchStartX.current = e.touches ? e.touches[0].clientX : e.clientX;
   };
@@ -272,9 +393,9 @@ const MainPageLayout = () => {
   const handleLocationClick = () => {
     setSelectedStation(null);
     setRouteTo(null);
-    setSearchKeyword(''); 
+    setSearchKeyword('');
     setSuggestions([]);
-    
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         pos => {
@@ -292,9 +413,34 @@ const MainPageLayout = () => {
     }
   };
 
+  // 길찾기 취소
+  const handleCloseRoute = () => {
+    setRouteTo(null);
+  };
+
   return (
-    <div className="flex flex-col h-screen bg-[#f9fafb] overflow-hidden">
-      <Header user={user} />
+    <div className="flex flex-col h-screen bg-slate-50 overflow-hidden">
+      <Header
+        user={user}
+        onLoginClick={openLoginModal}
+        onSignupClick={openSignupModal}
+      />
+
+      {/* Login & Signup Modals */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={closeLoginModal}
+        onLoginSuccess={handleLoginSuccess}
+        onSignupClick={openSignupModal}
+      // onFindPasswordClick ... (구현 필요 시 추가)
+      />
+      <SignupModal
+        isOpen={isSignupModalOpen}
+        onClose={closeSignupModal}
+        onSignupSuccess={openLoginModal}
+        onLoginClick={openLoginModal}
+      />
+
       {/* 모바일: 유가 패널 열기/닫기 탭 - 오른쪽(닫힐 땐 화면 오른쪽, 열릴 땐 드로어 왼쪽 가장자리) */}
       <div
         className="xl:hidden fixed top-1/2 -translate-y-1/2 z-[60] flex items-center transition-[right] duration-300 ease-out"
@@ -398,25 +544,30 @@ const MainPageLayout = () => {
           <AveragePricePanel initialSido={detectedSido} />
         </aside>
         <main className="flex-1 p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 relative min-h-0 overflow-visible">
-          <MapViewPanel 
-            stations={stations} 
-            selectedStation={selectedStation} 
-            onMarkerClick={handleMarkerClick} 
-            routeTo={routeTo} 
+          <MapViewPanel
+            stations={stations}
+            selectedStation={selectedStation}
+            onMarkerClick={handleMarkerClick}
+            routeTo={routeTo}
+            onCloseRoute={handleCloseRoute}
             currentLocation={currentLocation}
             onLocationClick={handleLocationClick}
             searchKeyword={searchKeyword}
             onSearchChange={handleSearchChange}
             suggestions={suggestions}
             onSuggestionClick={handleSuggestionClick}
+            recentKeywords={recentKeywords}
+            onDeleteRecentKeyword={handleDeleteRecentKeyword}
+            onDeleteAllRecentKeywords={handleDeleteAllRecentKeywords}
+            selectedFuel={selectedFuel}
           />
           <div className="min-h-[600px] lg:min-h-0 lg:h-full">
-            <StationListPanel 
-              stations={stations} 
+            <StationListPanel
+              stations={stations}
               selectedStationId={selectedStation?.id}
-              onStationClick={handleStationClick} 
-              onNavigate={handleNavigate} 
-              ref={listPanelRef} 
+              onStationClick={handleStationClick}
+              onNavigate={handleNavigate}
+              ref={listPanelRef}
             />
           </div>
         </main>

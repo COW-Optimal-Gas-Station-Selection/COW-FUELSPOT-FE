@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { addFavorite, getFavorites, removeFavorite } from '../../../api/favoriteService'
 import { getStationDetail } from '../../../api/stationService'
 import { FUEL_TYPE } from '../../../components/FuelPriceBox'
-import FavoriteButton from '../../mainpage/atoms/FavoriteButton'
 import StationCard from '../../mainpage/molecules/StationCard'
 
 function FavoriteStationsSection() {
@@ -17,7 +16,7 @@ function FavoriteStationsSection() {
     try {
       setLoading(true)
       const data = await getFavorites() // [{ favoriteId, stationId }, ...]
-      
+
       if (!data || data.length === 0) {
         setFavoriteStations([])
         return
@@ -25,13 +24,13 @@ function FavoriteStationsSection() {
 
       const detailPromises = data.map(f => getStationDetail(f.stationId))
       const rawDetails = await Promise.all(detailPromises)
-      
+
       // 백엔드 데이터를 프론트엔드 형식으로 변환 (MainPageLayout과 동일한 로직 적용)
       const mappedDetails = rawDetails.map(s => ({
         id: String(s.id),
         name: s.name,
         brand: s.brand,
-        address: s.address, 
+        address: s.address,
         tel: s.tel,
         isCarWash: s.isCarWash,
         tradeDate: s.tradeDate,
@@ -42,11 +41,12 @@ function FavoriteStationsSection() {
         prices: [
           { type: FUEL_TYPE.GASOLINE, price: s.prices?.GASOLINE || 0 },
           { type: FUEL_TYPE.DIESEL, price: s.prices?.DIESEL || 0 },
-          { type: FUEL_TYPE.PREMIUM, price: s.prices?.PREMIUM_GASOLINE || 0 },
-          { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 }
+          { type: FUEL_TYPE.PREMIUM_GASOLINE, price: s.prices?.PREMIUM_GASOLINE || 0 },
+          { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 },
+          { type: FUEL_TYPE.KEROSENE, price: s.prices?.KEROSENE || 0 }
         ].filter(p => p.price && p.price > 0)
       }));
-      
+
       setFavoriteStations(mappedDetails)
     } catch (error) {
       console.error('Failed to load favorites:', error)
@@ -58,7 +58,7 @@ function FavoriteStationsSection() {
   const handleToggleFavorite = async (stationId) => {
     try {
       const isCurrentlyFavorite = favoriteStations.some(s => s.id === stationId)
-      
+
       if (isCurrentlyFavorite) {
         if (!confirm('즐겨찾기에서 삭제하시겠습니까?')) return;
         await removeFavorite(stationId)
@@ -70,7 +70,7 @@ function FavoriteStationsSection() {
           id: String(s.id),
           name: s.name,
           brand: s.brand,
-          address: s.address, 
+          address: s.address,
           tel: s.tel,
           isCarWash: s.isCarWash,
           tradeDate: s.tradeDate,
@@ -81,8 +81,9 @@ function FavoriteStationsSection() {
           prices: [
             { type: FUEL_TYPE.GASOLINE, price: s.prices?.GASOLINE || 0 },
             { type: FUEL_TYPE.DIESEL, price: s.prices?.DIESEL || 0 },
-            { type: FUEL_TYPE.PREMIUM, price: s.prices?.PREMIUM_GASOLINE || 0 },
-            { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 }
+            { type: FUEL_TYPE.PREMIUM_GASOLINE, price: s.prices?.PREMIUM_GASOLINE || 0 },
+            { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 },
+            { type: FUEL_TYPE.KEROSENE, price: s.prices?.KEROSENE || 0 }
           ].filter(p => p.price && p.price > 0)
         }
         setFavoriteStations(prev => [...prev, mapped])
@@ -105,15 +106,13 @@ function FavoriteStationsSection() {
       <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar flex-1">
         {favoriteStations.length > 0 ? (
           favoriteStations.map(station => (
-            <div key={station.id} className="relative bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-              <StationCard station={station} />
-              <div className="absolute top-4 right-4 z-[1]">
-                <FavoriteButton
-                  stationId={station.id}
-                  isFavorite={true}
-                  onToggle={handleToggleFavorite}
-                />
-              </div>
+            <div key={station.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+              <StationCard
+                station={station}
+                isFavorite={true}
+                onToggleFavorite={handleToggleFavorite}
+                isLoggedIn={true}
+              />
             </div>
           ))
         ) : (

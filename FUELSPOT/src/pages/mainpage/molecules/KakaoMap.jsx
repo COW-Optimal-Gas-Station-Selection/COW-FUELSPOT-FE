@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import KakaoMapCurrentLocationMarker from '../atoms/KakaoMapCurrentLocationMarker';
 import KakaoMapMarker from '../atoms/KakaoMapMarker';
 import KakaoMapRoute from '../atoms/KakaoMapRoute';
@@ -19,6 +19,7 @@ const KakaoMap = ({
   onCloseRoute,
   currentLocation = { lat: 37.5665, lng: 126.9780 },
   selectedFuel,
+  mobileListLevel = 0,
   ...props
 }) => {
   const mapRef = useRef(null);
@@ -86,17 +87,33 @@ const KakaoMap = ({
   // 선택된 주유소 또는 내 위치로 지도 이동
   useEffect(() => {
     if (mapInstance.current) {
+      let targetPos = null;
       if (selectedStation && selectedStation.lat && selectedStation.lng) {
-        const pos = new window.kakao.maps.LatLng(selectedStation.lat, selectedStation.lng);
-        mapInstance.current.setCenter(pos);
-        mapInstance.current.setLevel(3);
+        targetPos = new window.kakao.maps.LatLng(selectedStation.lat, selectedStation.lng);
       } else if (currentLocation && currentLocation.lat && currentLocation.lng) {
-        const pos = new window.kakao.maps.LatLng(currentLocation.lat, currentLocation.lng);
-        mapInstance.current.setCenter(pos);
+        targetPos = new window.kakao.maps.LatLng(currentLocation.lat, currentLocation.lng);
+      }
+
+      if (targetPos) {
+        mapInstance.current.setCenter(targetPos);
         mapInstance.current.setLevel(3);
+
+        // 모바일 환경에서 바텀 시트 높이에 따른 중심점 조정 (마커를 위로 올림)
+        if (window.innerWidth < 1280 && mobileListLevel > 0) {
+          const mapHeight = mapRef.current?.offsetHeight || window.innerHeight;
+          let offsetY = 0;
+          if (mobileListLevel === 1) {
+            // 바텀 시트가 45vh일 때: 약 22.5% 아래로 팬 (마커는 시각적으로 위로 이동)
+            offsetY = mapHeight * 0.225;
+          } else if (mobileListLevel === 2) {
+            // 바텀 시트가 88vh일 때: 약 44% 아래로 팬
+            offsetY = mapHeight * 0.44;
+          }
+          mapInstance.current.panBy(0, offsetY);
+        }
       }
     }
-  }, [selectedStation, currentLocation]);
+  }, [selectedStation, currentLocation, mobileListLevel]);
 
   return (
     <div

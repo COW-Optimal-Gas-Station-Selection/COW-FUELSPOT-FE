@@ -17,7 +17,9 @@ function App() {
             <Route path="/mypage" element={<MyPage />} />
           </Routes>
         </main>
-        <Footer />
+        <div className="hidden xl:block">
+          <Footer />
+        </div>
       </div>
     </Router>
   )

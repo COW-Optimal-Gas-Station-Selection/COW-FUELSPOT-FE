@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { addFavorite, getFavorites, removeFavorite } from '../../../api/favoriteService'
 import { getStationDetail } from '../../../api/stationService'
-import { FUEL_TYPE } from '../../../components/FuelPriceBox'
 import StationCard from '../../mainpage/molecules/StationCard'
+import MyPageTitle from '../atoms/MyPageTitle'
 
 function FavoriteStationsSection() {
   const [favoriteStations, setFavoriteStations] = useState([])
   const [loading, setLoading] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     loadFavorites()
@@ -15,7 +16,7 @@ function FavoriteStationsSection() {
   const loadFavorites = async () => {
     try {
       setLoading(true)
-      const data = await getFavorites() // [{ favoriteId, stationId }, ...]
+      const data = await getFavorites()
 
       if (!data || data.length === 0) {
         setFavoriteStations([])
@@ -25,26 +26,19 @@ function FavoriteStationsSection() {
       const detailPromises = data.map(f => getStationDetail(f.stationId))
       const rawDetails = await Promise.all(detailPromises)
 
-      // 백엔드 데이터를 프론트엔드 형식으로 변환 (MainPageLayout과 동일한 로직 적용)
       const mappedDetails = rawDetails.map(s => ({
         id: String(s.id),
         name: s.name,
         brand: s.brand,
         address: s.address,
         tel: s.tel,
-        isCarWash: s.isCarWash,
+        carWash: s.carWash,
         tradeDate: s.tradeDate,
         tradeTime: s.tradeTime,
-        distance: '', // 마이페이지에서는 거리 표시 제외 또는 별도 처리
+        distance: '',
         lat: parseFloat(s.lat),
         lng: parseFloat(s.lon),
-        prices: [
-          { type: FUEL_TYPE.GASOLINE, price: s.prices?.GASOLINE || 0 },
-          { type: FUEL_TYPE.DIESEL, price: s.prices?.DIESEL || 0 },
-          { type: FUEL_TYPE.PREMIUM_GASOLINE, price: s.prices?.PREMIUM_GASOLINE || 0 },
-          { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 },
-          { type: FUEL_TYPE.KEROSENE, price: s.prices?.KEROSENE || 0 }
-        ].filter(p => p.price && p.price > 0)
+        prices: s.prices || {}
       }));
 
       setFavoriteStations(mappedDetails)
@@ -72,19 +66,13 @@ function FavoriteStationsSection() {
           brand: s.brand,
           address: s.address,
           tel: s.tel,
-          isCarWash: s.isCarWash,
+          carWash: s.carWash,
           tradeDate: s.tradeDate,
           tradeTime: s.tradeTime,
           distance: '',
           lat: parseFloat(s.lat),
           lng: parseFloat(s.lon),
-          prices: [
-            { type: FUEL_TYPE.GASOLINE, price: s.prices?.GASOLINE || 0 },
-            { type: FUEL_TYPE.DIESEL, price: s.prices?.DIESEL || 0 },
-            { type: FUEL_TYPE.PREMIUM_GASOLINE, price: s.prices?.PREMIUM_GASOLINE || 0 },
-            { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 },
-            { type: FUEL_TYPE.KEROSENE, price: s.prices?.KEROSENE || 0 }
-          ].filter(p => p.price && p.price > 0)
+          prices: s.prices || {}
         }
         setFavoriteStations(prev => [...prev, mapped])
       }
@@ -93,37 +81,58 @@ function FavoriteStationsSection() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="h-full flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    )
-  }
-
   return (
-    <div className="h-full flex flex-col">
-      <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar flex-1">
-        {favoriteStations.length > 0 ? (
-          favoriteStations.map(station => (
-            <div key={station.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-              <StationCard
-                station={station}
-                isFavorite={true}
-                onToggleFavorite={handleToggleFavorite}
-                isLoggedIn={true}
-              />
-            </div>
-          ))
-        ) : (
-          <div className="py-10 text-center text-gray-400 text-sm italic">
-            즐겨찾기한 주유소가 없습니다.
+    <div className="bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-gray-100 overflow-hidden transition-all duration-300">
+      {/* 아코디언 헤더 */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-8 md:p-10 flex items-center justify-between hover:bg-gray-50/50 transition-colors group"
+      >
+        <div className="mb-0">
+          <MyPageTitle title="즐겨찾는 주유소" color="yellow-400" />
+        </div>
+        <div className={`w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-yellow-50 group-hover:text-yellow-600 transition-all duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </button>
+
+      {/* 아코디언 컨텐츠 */}
+      <div className={`grid transition-all duration-500 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+        <div className="overflow-hidden">
+          <div className="p-8 md:p-10 pt-0 border-t border-gray-50 flex flex-col min-h-[400px]">
+            {loading ? (
+              <div className="flex-1 flex items-center justify-center py-20">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div>
+              </div>
+            ) : (
+              <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar max-h-[600px]">
+                {favoriteStations.length > 0 ? (
+                  favoriteStations.map(station => (
+                    <div key={station.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                      <StationCard
+                        station={station}
+                        isFavorite={true}
+                        onToggleFavorite={handleToggleFavorite}
+                        isLoggedIn={true}
+                      />
+                    </div>
+                  ))
+                ) : (
+                  <div className="py-20 text-center text-gray-400 text-sm font-medium italic">
+                    즐겨찾기한 주유소가 없습니다.
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   )
 }
 
 export default FavoriteStationsSection
+
 

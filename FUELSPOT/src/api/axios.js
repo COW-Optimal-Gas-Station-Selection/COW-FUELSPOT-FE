@@ -50,7 +50,9 @@ api.interceptors.response.use(
         const refreshToken = localStorage.getItem('refreshToken');
 
         if (!refreshToken) {
-          throw new Error('Refresh token not found');
+          // If no refresh token, they were either not logged in or already logged out
+          // Just reject the request without reloading everything
+          return Promise.reject(error);
         }
 
         // Use the api instance itself to benefit from baseURL and other configs
@@ -75,17 +77,19 @@ api.interceptors.response.use(
       } catch (refreshError) {
         console.error('Token refresh failed:', refreshError.message || refreshError);
 
-        // Clear all session data
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
+        // Only reload if we actually HAD a session that failed to refresh
+        if (localStorage.getItem('refreshToken')) {
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
 
-        // Redirect to home and let the UI handle the guest state
-        if (window.location.pathname !== '/') {
-          window.location.href = '/';
-        } else {
-          window.location.reload();
+          if (window.location.pathname !== '/') {
+            window.location.href = '/';
+          } else {
+            window.location.reload();
+          }
         }
+
         return Promise.reject(refreshError);
       }
     }

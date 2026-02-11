@@ -16,7 +16,7 @@ export const getNearbyStations = async (params) => {
 
 /**
  * 주유소 필터 조회
- * @param {Object} params { lat, lon, radius, fuelType, brand, isCarWash, isStore }
+ * @param {Object} params { lat, lon, radius, fuelType, brand, carWash, isStore }
  */
 export const getFilteredStations = async (params) => {
     try {

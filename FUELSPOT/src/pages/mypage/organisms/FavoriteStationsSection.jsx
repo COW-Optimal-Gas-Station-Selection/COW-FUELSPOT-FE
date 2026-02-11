@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { addFavorite, getFavorites, removeFavorite } from '../../../api/favoriteService'
 import { getStationDetail } from '../../../api/stationService'
-import { FUEL_TYPE } from '../../../components/FuelPriceBox'
 import StationCard from '../../mainpage/molecules/StationCard'
 
 function FavoriteStationsSection() {
@@ -32,19 +31,13 @@ function FavoriteStationsSection() {
         brand: s.brand,
         address: s.address,
         tel: s.tel,
-        isCarWash: s.isCarWash,
+        carWash: s.carWash,
         tradeDate: s.tradeDate,
         tradeTime: s.tradeTime,
         distance: '', // 마이페이지에서는 거리 표시 제외 또는 별도 처리
         lat: parseFloat(s.lat),
         lng: parseFloat(s.lon),
-        prices: [
-          { type: FUEL_TYPE.GASOLINE, price: s.prices?.GASOLINE || 0 },
-          { type: FUEL_TYPE.DIESEL, price: s.prices?.DIESEL || 0 },
-          { type: FUEL_TYPE.PREMIUM_GASOLINE, price: s.prices?.PREMIUM_GASOLINE || 0 },
-          { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 },
-          { type: FUEL_TYPE.KEROSENE, price: s.prices?.KEROSENE || 0 }
-        ].filter(p => p.price && p.price > 0)
+        prices: s.prices || {}
       }));
 
       setFavoriteStations(mappedDetails)
@@ -72,19 +65,13 @@ function FavoriteStationsSection() {
           brand: s.brand,
           address: s.address,
           tel: s.tel,
-          isCarWash: s.isCarWash,
+          carWash: s.carWash,
           tradeDate: s.tradeDate,
           tradeTime: s.tradeTime,
           distance: '',
           lat: parseFloat(s.lat),
           lng: parseFloat(s.lon),
-          prices: [
-            { type: FUEL_TYPE.GASOLINE, price: s.prices?.GASOLINE || 0 },
-            { type: FUEL_TYPE.DIESEL, price: s.prices?.DIESEL || 0 },
-            { type: FUEL_TYPE.PREMIUM_GASOLINE, price: s.prices?.PREMIUM_GASOLINE || 0 },
-            { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 },
-            { type: FUEL_TYPE.KEROSENE, price: s.prices?.KEROSENE || 0 }
-          ].filter(p => p.price && p.price > 0)
+          prices: s.prices || {}
         }
         setFavoriteStations(prev => [...prev, mapped])
       }

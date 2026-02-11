@@ -1,6 +1,5 @@
 import { forwardRef, useEffect, useState } from 'react';
 import { addFavorite, getFavorites, removeFavorite } from '../../../api/favoriteService';
-import { FUEL_TYPE } from '../../../components/FuelPriceBox';
 import StationFilterBox from '../atoms/StationFilterBox';
 import StationCard from '../molecules/StationCard';
 
@@ -72,27 +71,27 @@ const StationListPanel = forwardRef(({ stations = [], selectedStationId, onStati
     });
   } else if (sortType === 'gasoline') {
     sortedStations.sort((a, b) => {
-      const getGasoline = s => (s.prices.find(p => p.type === FUEL_TYPE.GASOLINE)?.price ?? Infinity);
+      const getGasoline = s => (s.prices?.GASOLINE ?? Infinity);
       return getGasoline(a) - getGasoline(b);
     });
   } else if (sortType === 'diesel') {
     sortedStations.sort((a, b) => {
-      const getDiesel = s => (s.prices.find(p => p.type === FUEL_TYPE.DIESEL)?.price ?? Infinity);
+      const getDiesel = s => (s.prices?.DIESEL ?? Infinity);
       return getDiesel(a) - getDiesel(b);
     });
   } else if (sortType === 'premium') {
     sortedStations.sort((a, b) => {
-      const getPremium = s => (s.prices.find(p => p.type === FUEL_TYPE.PREMIUM_GASOLINE)?.price ?? Infinity);
+      const getPremium = s => (s.prices?.PREMIUM_GASOLINE ?? Infinity);
       return getPremium(a) - getPremium(b);
     });
   } else if (sortType === 'kerosene') {
     sortedStations.sort((a, b) => {
-      const getKerosene = s => (s.prices.find(p => p.type === FUEL_TYPE.KEROSENE)?.price ?? Infinity);
+      const getKerosene = s => (s.prices?.KEROSENE ?? Infinity);
       return getKerosene(a) - getKerosene(b);
     });
   } else if (sortType === 'lpg') {
     sortedStations.sort((a, b) => {
-      const getLpg = s => (s.prices.find(p => p.type === FUEL_TYPE.LPG)?.price ?? Infinity);
+      const getLpg = s => (s.prices?.LPG ?? Infinity);
       return getLpg(a) - getLpg(b);
     });
   }

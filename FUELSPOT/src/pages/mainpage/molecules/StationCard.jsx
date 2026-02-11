@@ -1,5 +1,5 @@
 import PointIcon from '../../../assets/icon/point.svg?react';
-import FuelPriceBox from '../../../components/FuelPriceBox';
+import FuelPriceBox, { FUEL_TYPE } from '../../../components/FuelPriceBox';
 import GasBrandIconBox from '../../../components/GasBrandIconBox';
 import FavoriteButton from '../atoms/FavoriteButton';
 
@@ -60,14 +60,16 @@ const StationCard = ({
 
       {/* Prices */}
       <div className="grid grid-cols-2 gap-2.5">
-        {station.prices.map((p, idx) => (
-          <FuelPriceBox key={idx} fuelType={p.type} price={p.price} />
-        ))}
+        {Object.entries(station.prices || {})
+          .filter(([_, price]) => price > 0)
+          .map(([key, price], idx) => (
+            <FuelPriceBox key={idx} fuelType={FUEL_TYPE[key]} price={price} />
+          ))}
       </div>
 
       {/* Facilities / Options */}
       <div className="flex items-center gap-2 pt-1">
-        {station.isCarWash ? (
+        {station.carWash ? (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-bold ring-1 ring-blue-100">
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.121 15.536c-1.171 1.952-3.07 1.952-4.242 0-1.172-1.953-1.172-5.119 0-7.072 1.171-1.952 3.07-1.952 4.242 0M8 10.5h4m-4 3h4m9-1.5a9 9 0 11-18 0 9 9 0 0118 0z" />

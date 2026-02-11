@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { FUEL_TYPE } from '../../../components/FuelPriceBox';
 
 // 브랜드 이미지 매핑 (GasBrandIconBox.jsx와 동일)
 const BRAND_IMAGE_MAP = {
@@ -27,17 +26,17 @@ const KakaoMapMarker = ({ mapInstance, position, station, isSelected, selectedFu
     if (!mapInstance || !position) return;
 
     // 현재 유종 가격 찾기
-    const fuelTypeMap = {
-      gasoline: FUEL_TYPE.GASOLINE,
-      diesel: FUEL_TYPE.DIESEL,
-      premium: FUEL_TYPE.PREMIUM_GASOLINE,
-      lpg: FUEL_TYPE.LPG,
-      kerosene: FUEL_TYPE.KEROSENE
+    const fuelKeyMap = {
+      gasoline: 'GASOLINE',
+      diesel: 'DIESEL',
+      premium: 'PREMIUM_GASOLINE',
+      lpg: 'LPG',
+      kerosene: 'KEROSENE'
     };
 
-    const targetType = fuelTypeMap[selectedFuel] || FUEL_TYPE.GASOLINE;
-    const priceObj = station.prices?.find(p => p.type === targetType);
-    const price = priceObj ? priceObj.price.toLocaleString() : '-';
+    const targetKey = fuelKeyMap[selectedFuel] || 'GASOLINE';
+    const priceValue = station.prices?.[targetKey];
+    const price = priceValue ? priceValue.toLocaleString() : '-';
 
     // 브랜드 이미지 경로 생성
     const imageName = BRAND_IMAGE_MAP[station.brand];

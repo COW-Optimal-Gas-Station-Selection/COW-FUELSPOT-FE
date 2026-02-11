@@ -2,7 +2,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { addSearchLog, deleteAllKeywords, deleteKeyword, getRecentKeywords } from '../../../api/searchService';
 import { getAddressFromCoords, getNearbyStations, searchPlaces } from '../../../api/stationService';
-import { FUEL_TYPE } from '../../../components/FuelPriceBox';
 import AveragePricePanel from './AveragePricePanel';
 import Header from './Header';
 import LoginModal from './LoginModal';
@@ -246,19 +245,13 @@ const MainPageLayout = () => {
           brand: s.brand,
           address: s.address,
           tel: s.tel,
-          isCarWash: s.isCarWash,
+          carWash: s.carWash,
           tradeDate: s.tradeDate,
           tradeTime: s.tradeTime,
           distance: `${(s.distance / 1000).toFixed(1)}km`,
           lat: parseFloat(s.lat),
           lng: parseFloat(s.lon),
-          prices: [
-            { type: FUEL_TYPE.GASOLINE, price: s.prices?.GASOLINE || 0 },
-            { type: FUEL_TYPE.DIESEL, price: s.prices?.DIESEL || 0 },
-            { type: FUEL_TYPE.PREMIUM_GASOLINE, price: s.prices?.PREMIUM_GASOLINE || 0 },
-            { type: FUEL_TYPE.LPG, price: s.prices?.LPG || 0 },
-            { type: FUEL_TYPE.KEROSENE, price: s.prices?.KEROSENE || 0 }
-          ].filter(p => p.price > 0)
+          prices: s.prices || {}
         }));
 
         setStations(mappedStations);

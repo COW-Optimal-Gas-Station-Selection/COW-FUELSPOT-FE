@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { getFavoriteCount } from '../../../api/favoriteService';
 import PointIcon from '../../../assets/icon/point.svg?react';
 import FuelPriceBox, { FUEL_TYPE } from '../../../components/FuelPriceBox';
 import GasBrandIconBox from '../../../components/GasBrandIconBox';
@@ -25,6 +27,21 @@ const StationCard = ({
   onNavigate,
   ...props
 }) => {
+  const [favoriteCount, setFavoriteCount] = useState(0);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      if (!isLoggedIn) return; // 로그인 상태가 아니면 API 호출하지 않음
+      try {
+        const count = await getFavoriteCount(station.id);
+        setFavoriteCount(count);
+      } catch (error) {
+        console.error('Failed to fetch favorite count:', error);
+      }
+    };
+    fetchCount();
+  }, [station.id, isFavorite, isLoggedIn]);
+
   const standardText = formatPriceStandard(station.tradeDate, station.tradeTime);
   return (
     <div
@@ -38,23 +55,26 @@ const StationCard = ({
           <div className="shrink-0">
             <GasBrandIconBox brand={station.brand} />
           </div>
-          <div>
-            <h3 className={`text-lg font-bold transition-colors ${isSelected ? 'text-blue-700' : 'text-slate-800'}`}>
+          <div className="min-w-0">
+            <h3 className={`text-lg font-bold transition-colors truncate ${isSelected ? 'text-blue-700' : 'text-slate-800'}`}>
               {station.name}
             </h3>
-            <div className="flex items-center gap-1 text-slate-500 text-sm mt-0.5">
+            <div className="flex items-center gap-1 text-slate-500 text-sm mt-0.5 min-w-0">
               <PointIcon className="shrink-0 w-3.5 h-3.5 text-slate-400" />
-              <span className="truncate max-w-[200px]">{station.address}</span>
+              <span className="truncate">{station.address}</span>
             </div>
           </div>
         </div>
-        <div className="shrink-0">
+        <div className="shrink-0 flex flex-col items-center gap-1">
           <FavoriteButton
             stationId={station.id}
             isFavorite={isFavorite}
             onToggle={onToggleFavorite}
             disabled={!isLoggedIn}
           />
+          <span className="text-[10px] font-bold text-slate-400 leading-none">
+            {favoriteCount > 999 ? '999+' : favoriteCount}
+          </span>
         </div>
       </div>
 
@@ -86,9 +106,8 @@ const StationCard = ({
         )}
       </div>
 
-      {/* Footer: Info & Action */}
-      <div className="flex items-end justify-between pt-3 border-t border-slate-50 mt-1">
-        <div className="flex flex-col gap-1">
+      <div className="flex flex-wrap items-end justify-between gap-3 pt-3 border-t border-slate-50 mt-1">
+        <div className="flex flex-col gap-1 min-w-0">
           {station.tel && <span className="text-xs text-slate-500 font-medium flex items-center gap-1">
             <svg className="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
             {station.tel}

@@ -15,7 +15,7 @@ const PriceCard = ({ title, prices, isSido = false, selectedSido, onSidoChange, 
 
   return (
     <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-4 animate-fadeIn">
-      <div className="flex justify-between items-center gap-2 mb-3 flex-nowrap min-w-0">
+      <div className="flex justify-between items-center gap-2 mb-3 flex-wrap min-w-0">
         <h3 className="font-bold text-gray-800 flex items-center gap-2 shrink-0 min-w-0">
           <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></span>
           <span className="truncate">{title}</span>

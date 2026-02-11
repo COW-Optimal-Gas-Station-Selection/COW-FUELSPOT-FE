@@ -5,7 +5,6 @@ import Button from '../../components/Button'
 import Modal from '../../components/Modal'
 import { validateConfirmPassword, validateNickname, validatePassword } from '../../utils/validation'
 import Header from '../mainpage/organisms/Header'
-import MyPageTitle from './atoms/MyPageTitle'
 import DeleteAccountModal from './organisms/DeleteAccountModal'
 import EditProfileSection from './organisms/EditProfileSection'
 import FavoriteStationsSection from './organisms/FavoriteStationsSection'
@@ -185,13 +184,8 @@ function MyPage() {
               navigate={navigate}
             />
 
-            {/* Right Panel: Favorites & Search Log */}
-            <div className="bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] p-8 md:p-10 border border-gray-100 h-full min-h-[600px] flex flex-col">
-              <MyPageTitle title="즐겨찾는 주유소" color="yellow-400" />
-              <div className="flex-1">
-                <FavoriteStationsSection />
-              </div>
-            </div>
+            {/* Favorites Section */}
+            <FavoriteStationsSection />
           </div>
         </div>
       </div>

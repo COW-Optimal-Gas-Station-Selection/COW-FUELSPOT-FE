@@ -31,3 +31,14 @@ export const removeFavorite = async (stationId) => {
         throw error;
     }
 };
+
+// 즐겨찾기 개수 조회
+export const getFavoriteCount = async (stationId) => {
+    try {
+        const response = await api.get(`/favorites/count/${stationId}`);
+        return response; // axios interceptor already returns response.data.result
+    } catch (error) {
+        console.error('Failed to fetch favorite count:', error);
+        throw error;
+    }
+};

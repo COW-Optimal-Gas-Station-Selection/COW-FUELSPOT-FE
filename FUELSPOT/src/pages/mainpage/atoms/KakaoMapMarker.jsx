@@ -46,7 +46,7 @@ const KakaoMapMarker = ({ mapInstance, position, station, isSelected, selectedFu
     }
 
     const content = document.createElement('div');
-    content.className = `relative flex flex-col items-center transition-all duration-300 ${isSelected ? 'scale-125 z-[100]' : 'scale-110 hover:scale-120 hover:z-[110]'}`;
+    content.className = `relative flex flex-col items-center transition-all duration-300 ${isSelected ? 'scale-125' : 'scale-110 hover:scale-120'}`;
 
     // 마커 박스 HTML
     content.innerHTML = `
@@ -121,9 +121,9 @@ const KakaoMapMarker = ({ mapInstance, position, station, isSelected, selectedFu
       zIndex: isSelected ? 100 : 10
     });
 
-    // 호버 시 z-index 최상단으로 올리기
+    // 호버 시 z-index 최상단으로 올리기 (선택된 마커보다 위로)
     content.addEventListener('mouseenter', () => {
-      overlay.setZIndex(isSelected ? 110 : 90);
+      overlay.setZIndex(200);
     });
     content.addEventListener('mouseleave', () => {
       overlay.setZIndex(isSelected ? 100 : 10);
